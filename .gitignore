@@ -128,3 +128,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+/src/JourneyDrawing.Front/.vs/JourneyDrawing.Front
+/src/JourneyDrawing.Front/JourneyDrawing.Front/bin/Debug/net6.0
+/src/JourneyDrawing.Front/JourneyDrawing.Front/client-src2/.vscode/extensions.json
+/src/JourneyDrawing.Front/JourneyDrawing.Front/client-src2/.vscode
+/src/JourneyDrawing.Front/JourneyDrawing.Front/obj
