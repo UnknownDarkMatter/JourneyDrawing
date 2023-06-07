@@ -1,0 +1,30 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+    <title>JourneyDrawing.Front</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="~/styles.css" asp-append-version="true">
+</head>
+<body>
+  <app-root></app-root>
+    <script src="~/assets/scripts/vector3d.js" type="module" asp-append-version="true"></script>
+    <script src="~/assets/scripts/dms.js" type="module" asp-append-version="true"></script>
+    <script src="~/assets/scripts/latlon-ellipsoidal.js" type="module" asp-append-version="true"></script>
+    <script src="~/assets/scripts/latlon-ellipsoidal-datum.js" type="module" asp-append-version="true"></script>
+    <script src="~/assets/scripts/utm.js" type="module" asp-append-version="true"></script>
+
+    <script src="~/runtime.js" type="module" asp-append-version="true"></script>
+    <script src="~/polyfills.js" type="module" asp-append-version="true"></script>
+    <script src="~/main.js" type="module" asp-append-version="true"></script>
+
+    @RenderBody()
+
+    <script type="module">
+        import { LatLon } from 'http://localhost:5221/assets/scripts//utm.js';
+        const latLongP = new LatLon(52.2, 0.12); //new LatLon(52.2, 0.12); //gpsN: 40.7128, gpsW: 74.006 --> 18T, NOK
+        const utmCoord = latLongP.toUtm();
+        console.log(utmCoord.toString()); // '31 N 303189 5787193'
+    </script>
+
+</body></html>
