@@ -17,14 +17,24 @@
     <script src="~/runtime.js" type="module" asp-append-version="true"></script>
     <script src="~/polyfills.js" type="module" asp-append-version="true"></script>
     <script src="~/main.js" type="module" asp-append-version="true"></script>
+    <script src="~/utm-utils.js" type="text/javascript" asp-append-version="true"></script>
 
     @RenderBody()
 
-    <script type="module">
+   @* <script >
         import { LatLon } from 'http://localhost:5221/assets/scripts/utm.js';
         const latLongP = new LatLon(40.78306, -73.971249); //new LatLon(52.2, 0.12); //WGS84 lat 40.78306, long -73.971249 --> 18N au lieu de 18T, NOK
         const utmCoord = latLongP.toUtm();
         console.log(utmCoord.toString()); // '31 N 303189 5787193'
+    </script>*@
+
+    <script type="module">
+        import { fromLatLon } from 'http://localhost:5221/assets/scripts/utm-utils.js'
+        var result = fromLatLon(40.78306, -73.971249);//NY 18T
+        console.log(result);
+
+        result = fromLatLon(50.557967, 3.076172);//Lille
+        console.log(result);
     </script>
 
 </body></html>
