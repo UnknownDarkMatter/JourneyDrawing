@@ -22,6 +22,7 @@
 */
 
 BordersTracing.DoTraceBorders(902, 181);
+//BordersTracing.DoTraceBorders(13, 13);
 
 //ImageToPixels.ExtractPixels();
 

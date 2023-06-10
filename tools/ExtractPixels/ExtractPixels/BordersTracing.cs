@@ -4,6 +4,8 @@ using System.Text;
 
 public static class BordersTracing
 {
+    public const int MaxDepth = 5;
+    public static Color BorderColor = Color.Blue;
     private enum PixelPosition
     {
         Both = 0,
@@ -22,9 +24,10 @@ public static class BordersTracing
             int x1 = xStart;
             int y1 = yStart;
             var foundPixels = new List<Tuple<int, int>>();
-            while(TryGetNextBorderPixel(x1, y1, foundPixels, image, out int x2, out int y2) > 0)
+            image.SetPixel(x1, y1, Color.Blue);
+            while (TryGetNextBorderPixel(x1, y1, foundPixels, image, out int x2, out int y2) > 0)
             {
-                image.SetPixel(x2, y2, Color.Blue);
+                image.SetPixel(x2, y2, BorderColor);
                 image.Save(outputPath);
 
                 foundPixels.Add(new Tuple<int, int>(x2, y2));
@@ -36,8 +39,11 @@ public static class BordersTracing
 
     private static bool HasEmptyPixelsInNeighbourhood(int x, int y, Bitmap image)
     {
-        var neighBourPixel = GetNeighbourPixels(x, y, image, PixelPosition.Both)
-            .FirstOrDefault((tuple) => image.GetPixel(tuple.Item1, tuple.Item2).Name == "0");
+        var pixels = GetNeighbourPixels(x, y, image, PixelPosition.Both);
+        var neighBourPixel = pixels
+            .FirstOrDefault((tuple) => image.GetPixel(tuple.Item1, tuple.Item2).Name == "0"
+            || image.GetPixel(tuple.Item1, tuple.Item2).Name == "ffffffff"
+            );
         return neighBourPixel != null;
     }
 
@@ -71,7 +77,7 @@ public static class BordersTracing
         Bitmap image, out int x2, out int y2)
     {
         int depth = 0;
-        int maxDepth = 5;
+        int maxDepth = MaxDepth;
         int x1ToTest = 0;
         int y1ToTest = 0;
 
@@ -138,17 +144,24 @@ public static class BordersTracing
             .Where((t) => 
                 HasEmptyPixelsInNeighbourhood(t.Item1, t.Item2, image)
                 && image.GetPixel(t.Item1, t.Item2).Name != "0"
+                && image.GetPixel(t.Item1, t.Item2).Name != "ffffffff"
                 && !foundPixels.Any(t2 => t.Item1 == t2.Item1 && t.Item2 == t2.Item2)
             );
+
         var crossNeighBourHoodPixels = neighBourPixel
             .Where(t =>
-                   GetNeighbourPixels(x1, y1, image, PixelPosition.Cross)
-                   .Any(t2 =>
-                        HasEmptyPixelsInNeighbourhood(t2.Item1, t2.Item2, image)
-                        && image.GetPixel(t2.Item1, t2.Item2).Name != "0"
-                        && !foundPixels.Any(t3 => t2.Item1 == t3.Item1 && t2.Item2 == t3.Item2)
-                       )
+                        //!GetNeighbourPixels(t.Item1, t.Item2, image, PixelPosition.Aside)
+                        //    .Any(t4 => image.GetPixel(t4.Item1, t4.Item2).ToArgb() == BorderColor.ToArgb())
+                        //&&
+                        GetNeighbourPixels(x1, y1, image, PixelPosition.Cross)
+                            .Any(t2 =>
+                                HasEmptyPixelsInNeighbourhood(t2.Item1, t2.Item2, image)
+                                && image.GetPixel(t2.Item1, t2.Item2).Name != "0"
+                                && image.GetPixel(t2.Item1, t2.Item2).Name != "ffffffff"
+                                && !foundPixels.Any(t3 => t2.Item1 == t3.Item1 && t2.Item2 == t3.Item2)
+                           )
                     ).ToList();
+
         neighBourPixel = neighBourPixel
             .Where(t =>
                 crossNeighBourHoodPixels.Count == 0
