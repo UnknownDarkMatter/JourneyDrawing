@@ -6,8 +6,8 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./port.component.scss'],
 })
 export class PortComponent implements OnInit {
-  @Input() public top!: number;
-  @Input() public left!: number;
+  @Input() public top?: number;
+  @Input() public left?: number;
 
   constructor() {}
   ngOnInit(): void {}

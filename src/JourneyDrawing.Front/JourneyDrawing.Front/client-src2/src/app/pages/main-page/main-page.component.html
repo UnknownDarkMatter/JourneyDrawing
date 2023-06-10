@@ -1,7 +1,8 @@
 <div class="wrapper">
+  <img src="../../../assets/images/Universal_Transverse_Mercator2.png"  />
   <app-port
-    [top]="port.topPixel"
-    [left]="port.leftPixel"
+    [top]="getPortTopPixels(port)"
+    [left]="getPortLeftPixels(port)"
     *ngFor="let port of ports"
   />
 </div>

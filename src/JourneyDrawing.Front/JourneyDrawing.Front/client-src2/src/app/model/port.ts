@@ -1,6 +1,5 @@
 export interface Port {
-  topPixel: number;
-  leftPixel: number;
-  gpsN: number;
-  gpsW: number;
+  name?:string;
+  latitudeWGS84?: number;
+  longitudeWGS84?: number;
 }
