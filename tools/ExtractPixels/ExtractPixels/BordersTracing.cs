@@ -152,15 +152,18 @@ public static class BordersTracing
 
         var crossNeighBourHoodPixels = neighBourPixel
             .Where(t =>
-                        IgnoreWhenNumberOfAside > GetNeighbourPixels(t.Item1, t.Item2, image, PixelPosition.Aside)
-                            .Count(t4 => image.GetPixel(t4.Item1, t4.Item2).ToArgb() == BorderColor.ToArgb())
-                        &&
+                        //IgnoreWhenNumberOfAside > GetNeighbourPixels(t.Item1, t.Item2, image, PixelPosition.Aside)
+                        //    .Count(t4 => image.GetPixel(t4.Item1, t4.Item2).ToArgb() == BorderColor.ToArgb())
+                        //&&
                         GetNeighbourPixels(x1, y1, image, PixelPosition.Cross)
                             .Any(t2 =>
                                 HasEmptyPixelsInNeighbourhood(t2.Item1, t2.Item2, image)
                                 && image.GetPixel(t2.Item1, t2.Item2).Name != "0"
                                 && image.GetPixel(t2.Item1, t2.Item2).Name != "ffffffff"
-                                && !foundPixels.Any(t3 => t2.Item1 == t3.Item1 && t2.Item2 == t3.Item2)
+                                && !foundPixels.Any(t3 => t2.Item1 == t3.Item1 && t2.Item2 == t3.Item2
+                                //&& IgnoreWhenNumberOfAside > GetNeighbourPixels(t2.Item1, t2.Item2, image, PixelPosition.Aside)
+                                //    .Count(t4 => image.GetPixel(t4.Item1, t4.Item2).ToArgb() == BorderColor.ToArgb())
+                                )
                            )
                     ).ToList();
 
@@ -173,6 +176,18 @@ public static class BordersTracing
                     .Any(t3 => t3.Item1 == t2.Item1 && t3.Item2 == t2.Item2)
                 )
             );
+
+        //if(neighBourPixel.Count() == 0 && crossNeighBourHoodPixels.Count() == 1)
+        //{
+        //    neighBourPixel = crossNeighBourHoodPixels
+        //        .Where(t =>
+        //            2 == GetNeighbourPixels(t.Item1, t.Item2, image, PixelPosition.Aside)
+        //                .Count(t2 =>
+        //                    image.GetPixel(t2.Item1, t2.Item2).Name == "0"
+        //                    || image.GetPixel(t2.Item1, t2.Item2).Name == "ffffffff"
+        //                )
+        //        );
+        //}
 
         if (!neighBourPixel.Any()) { 
             x2 = 0; 
