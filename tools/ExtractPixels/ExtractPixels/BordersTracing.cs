@@ -177,17 +177,20 @@ public static class BordersTracing
                 )
             );
 
-        //if(neighBourPixel.Count() == 0 && crossNeighBourHoodPixels.Count() == 1)
-        //{
-        //    neighBourPixel = crossNeighBourHoodPixels
-        //        .Where(t =>
-        //            2 == GetNeighbourPixels(t.Item1, t.Item2, image, PixelPosition.Aside)
-        //                .Count(t2 =>
-        //                    image.GetPixel(t2.Item1, t2.Item2).Name == "0"
-        //                    || image.GetPixel(t2.Item1, t2.Item2).Name == "ffffffff"
-        //                )
-        //        );
-        //}
+        if (neighBourPixel.Count() == 0 
+            && 1 == crossNeighBourHoodPixels.Count(t=>
+                IgnoreWhenNumberOfAside > GetNeighbourPixels(t.Item1, t.Item2, image, PixelPosition.Aside)
+                        .Count(t4 => image.GetPixel(t4.Item1, t4.Item2).ToArgb() == BorderColor.ToArgb())))
+        {
+            neighBourPixel = crossNeighBourHoodPixels
+                .Where(t =>
+                    2 == GetNeighbourPixels(t.Item1, t.Item2, image, PixelPosition.Aside)
+                        .Count(t2 =>
+                            image.GetPixel(t2.Item1, t2.Item2).Name == "0"
+                            || image.GetPixel(t2.Item1, t2.Item2).Name == "ffffffff"
+                        )
+                );
+        }
 
         if (!neighBourPixel.Any()) { 
             x2 = 0; 
