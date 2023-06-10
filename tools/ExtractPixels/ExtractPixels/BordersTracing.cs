@@ -6,6 +6,7 @@ public static class BordersTracing
 {
     public const int MaxDepth = 5;
     public static Color BorderColor = Color.Blue;
+    public const int IgnoreWhenNumberOfAside = 2;
     private enum PixelPosition
     {
         Both = 0,
@@ -148,11 +149,12 @@ public static class BordersTracing
                 && !foundPixels.Any(t2 => t.Item1 == t2.Item1 && t.Item2 == t2.Item2)
             );
 
+
         var crossNeighBourHoodPixels = neighBourPixel
             .Where(t =>
-                        //!GetNeighbourPixels(t.Item1, t.Item2, image, PixelPosition.Aside)
-                        //    .Any(t4 => image.GetPixel(t4.Item1, t4.Item2).ToArgb() == BorderColor.ToArgb())
-                        //&&
+                        IgnoreWhenNumberOfAside > GetNeighbourPixels(t.Item1, t.Item2, image, PixelPosition.Aside)
+                            .Count(t4 => image.GetPixel(t4.Item1, t4.Item2).ToArgb() == BorderColor.ToArgb())
+                        &&
                         GetNeighbourPixels(x1, y1, image, PixelPosition.Cross)
                             .Any(t2 =>
                                 HasEmptyPixelsInNeighbourhood(t2.Item1, t2.Item2, image)
