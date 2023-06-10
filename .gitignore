@@ -134,3 +134,7 @@ dist
 /src/JourneyDrawing.Front/JourneyDrawing.Front/client-src2/.vscode
 /src/JourneyDrawing.Front/JourneyDrawing.Front/obj
 /src/JourneyDrawing.Front/.vs/ProjectEvaluation
+/.vs
+/tools/ExtractPixels/.vs/ExtractPixels
+/tools/ExtractPixels/ExtractPixels/bin/Debug/net6.0
+/tools/ExtractPixels/ExtractPixels/obj
