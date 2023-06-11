@@ -40,42 +40,47 @@ using (var image = new Bitmap(System.Drawing.Image.FromFile(inputPath)))
             outputMap.SetPixel(x, y, Color.White);
         }
     }
-    //BordersTracing.DoTraceBorders(1847, 75, outputMap);//continent eurasien
-    //BordersTracing.DoTraceBorders(973, 211, outputMap);//
-    //BordersTracing.DoTraceBorders(972, 220, outputMap);//
-    //BordersTracing.DoTraceBorders(991, 236, outputMap);//
-    //BordersTracing.DoTraceBorders(904, 136, outputMap);//angleterre
-    //BordersTracing.DoTraceBorders(875, 153, outputMap);//irlande
-    //BordersTracing.DoTraceBorders(896, 248, outputMap);//contient africain
-    //BordersTracing.DoTraceBorders(1177, 497, outputMap);//madagascar
-    //BordersTracing.DoTraceBorders(1657, 488, outputMap);//australie
-    //BordersTracing.DoTraceBorders(1656, 157, outputMap);//japon
-    //BordersTracing.DoTraceBorders(1655, 200, outputMap);//japon
-    //BordersTracing.DoTraceBorders(1649, 219, outputMap);//japon
-    //BordersTracing.DoTraceBorders(1608, 257, outputMap);//japon
-    //BordersTracing.DoTraceBorders(1596, 258, outputMap);//japon
-    //BordersTracing.DoTraceBorders(1524, 396, outputMap);//
-    //BordersTracing.DoTraceBorders(1415, 403, outputMap);//
-    //BordersTracing.DoTraceBorders(1470, 462, outputMap);//
-    //BordersTracing.DoTraceBorders(1562, 390, outputMap);//
-    //BordersTracing.DoTraceBorders(1545, 426, outputMap);//
-    //BordersTracing.DoTraceBorders(1579, 426, outputMap);//
-    //BordersTracing.DoTraceBorders(1539, 439, outputMap);//
-    //BordersTracing.DoTraceBorders(1574, 448, outputMap);//
-    //BordersTracing.DoTraceBorders(1528, 474, outputMap);//
-    //BordersTracing.DoTraceBorders(1543, 474, outputMap);//
-    //BordersTracing.DoTraceBorders(1538, 480, outputMap);//
-    //BordersTracing.DoTraceBorders(1568, 476, outputMap);//
-    //BordersTracing.DoTraceBorders(1568, 476, outputMap);//
-    //BordersTracing.DoTraceBorders(1604, 434, outputMap);//
-    //BordersTracing.DoTraceBorders(1693, 460, outputMap);//
-    //BordersTracing.DoTraceBorders(1487, 330, outputMap);//
-    //BordersTracing.DoTraceBorders(1543, 341, outputMap);//
-    //BordersTracing.DoTraceBorders(1335, 386, outputMap);//
-    //BordersTracing.DoTraceBorders(1677, 644, outputMap);//
-    //BordersTracing.DoTraceBorders(1812, 611, outputMap);//
-    //BordersTracing.DoTraceBorders(1789, 671, outputMap);//
+    BordersTracing.DoTraceBorders(1847, 75, outputMap);//continent eurasien
+    BordersTracing.DoTraceBorders(973, 211, outputMap);//
+    BordersTracing.DoTraceBorders(972, 220, outputMap);//
+    BordersTracing.DoTraceBorders(991, 236, outputMap);//
+    BordersTracing.DoTraceBorders(904, 136, outputMap);//angleterre
+    BordersTracing.DoTraceBorders(875, 153, outputMap);//irlande
+    BordersTracing.DoTraceBorders(896, 248, outputMap);//contient africain
+    BordersTracing.DoTraceBorders(1177, 497, outputMap);//madagascar
+    BordersTracing.DoTraceBorders(1657, 488, outputMap);//australie
+    BordersTracing.DoTraceBorders(1656, 157, outputMap);//japon
+    BordersTracing.DoTraceBorders(1655, 200, outputMap);//japon
+    BordersTracing.DoTraceBorders(1649, 219, outputMap);//japon
+    BordersTracing.DoTraceBorders(1608, 257, outputMap);//japon
+    BordersTracing.DoTraceBorders(1596, 258, outputMap);//japon
+    BordersTracing.DoTraceBorders(1524, 396, outputMap);//
+    BordersTracing.DoTraceBorders(1415, 403, outputMap);//
+    BordersTracing.DoTraceBorders(1470, 462, outputMap);//
+    BordersTracing.DoTraceBorders(1562, 390, outputMap);//
+    BordersTracing.DoTraceBorders(1545, 426, outputMap);//
+    BordersTracing.DoTraceBorders(1579, 426, outputMap);//
+    BordersTracing.DoTraceBorders(1539, 439, outputMap);//
+    BordersTracing.DoTraceBorders(1574, 448, outputMap);//
+    BordersTracing.DoTraceBorders(1528, 474, outputMap);//
+    BordersTracing.DoTraceBorders(1543, 474, outputMap);//
+    BordersTracing.DoTraceBorders(1538, 480, outputMap);//
+    BordersTracing.DoTraceBorders(1568, 476, outputMap);//
+    BordersTracing.DoTraceBorders(1568, 476, outputMap);//
+    BordersTracing.DoTraceBorders(1604, 434, outputMap);//
+    BordersTracing.DoTraceBorders(1693, 460, outputMap);//
+    BordersTracing.DoTraceBorders(1487, 330, outputMap);//
+    BordersTracing.DoTraceBorders(1543, 341, outputMap);//
+    BordersTracing.DoTraceBorders(1335, 386, outputMap);//
+    BordersTracing.DoTraceBorders(1677, 644, outputMap);//
+    BordersTracing.DoTraceBorders(1812, 611, outputMap);//
     BordersTracing.DoTraceBorders(1789, 671, outputMap);//
+    BordersTracing.DoTraceBorders(822, 92, outputMap);//islande
+    BordersTracing.DoTraceBorders(748, 2, outputMap);//groenland
+    BordersTracing.DoTraceBorders(443, 339, outputMap);//amerique du nord
+    BordersTracing.DoTraceBorders(526, 392, outputMap);//amerique du sud
+    BordersTracing.DoTraceBorders(505, 313, outputMap);//
+    BordersTracing.DoTraceBorders(557, 329, outputMap);//
 
 
     outputMap.Save(outputMapPath);
@@ -86,7 +91,7 @@ using (var image = new Bitmap(System.Drawing.Image.FromFile(inputPath)))
 
 
 
-//ImageToPixels.ExtractPixels();
+ImageToPixels.ExtractPixels(outputMapPath);
 
 
 

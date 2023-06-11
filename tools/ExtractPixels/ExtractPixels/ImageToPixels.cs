@@ -4,10 +4,9 @@ using System.Text;
 
 public static class ImageToPixels
 {
-    public static void ExtractPixels()
+    public static void ExtractPixels(string inputPath)
     {
 
-        string inputPath = Path.Combine(Environment.CurrentDirectory, "image.png");
         string outputCsv = Path.Combine(Environment.CurrentDirectory, "pixels.csv");
         var cultureInfo = new CultureInfo("fr-FR");
 
