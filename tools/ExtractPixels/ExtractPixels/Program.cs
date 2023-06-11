@@ -22,8 +22,8 @@
 */
 
 
-BordersTracing.DoTraceBorders(1847, 75);//continent eurasien
-//BordersTracing.DoTraceBorders(18, 588);
+//BordersTracing.DoTraceBorders(1847, 75);//continent eurasien
+BordersTracing.DoTraceBorders(896, 248);//contient africain
 //BordersTracing.DoTraceBorders(13, 13);
 
 //ImageToPixels.ExtractPixels();
