@@ -13,7 +13,7 @@ public static class BordersTracing
         Cross = 1,
         Aside = 2
     }
-    public static void DoTraceBorders(int xStart, int yStart)
+    public static void DoTraceBorders(int xStart, int yStart, Bitmap outputMap)
     {
         string inputPath = Path.Combine(Environment.CurrentDirectory, "image.png");
         string outputPath = Path.Combine(Environment.CurrentDirectory, "image_borders.png");
@@ -30,6 +30,8 @@ public static class BordersTracing
             {
                 image.SetPixel(x2, y2, BorderColor);
                 image.Save(outputPath);
+
+                outputMap.SetPixel(x2, y2, Color.Black);
 
                 foundPixels.Add(new Tuple<int, int>(x2, y2));
                 x1 = x2;
