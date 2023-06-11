@@ -53,10 +53,10 @@ public static class BordersTracing
         var result = new List<Tuple<int, int>>();
         if (pixelPosition == PixelPosition.Both || pixelPosition == PixelPosition.Cross)
         {
-            result.Add(new Tuple<int, int>(x + 1, y + 1));
-            result.Add(new Tuple<int, int>(x + 1, y - 1));
             result.Add(new Tuple<int, int>(x - 1, y + 1));
             result.Add(new Tuple<int, int>(x - 1, y - 1));
+            result.Add(new Tuple<int, int>(x + 1, y + 1));
+            result.Add(new Tuple<int, int>(x + 1, y - 1));
         }
         if (pixelPosition == PixelPosition.Both || pixelPosition == PixelPosition.Aside)
         {
@@ -66,9 +66,9 @@ public static class BordersTracing
             result.Add(new Tuple<int, int>(x - 1, y));
         }
         result = result.Where((tuple) => 
-            tuple.Item1 <= image.Width 
+            tuple.Item1 < image.Width 
             && tuple.Item1 >= 0
-            && tuple.Item2 <= image.Height
+            && tuple.Item2 < image.Height
             && tuple.Item2 >= 0
         ).ToList();
         return result;
