@@ -28,7 +28,7 @@ public static class ImageToPixels
                     //    a = "e";
                     //}
                     Color pixelColor = image.GetPixel(x, y);
-                    if (pixelColor.Name != "0")
+                    if (pixelColor.Name != "0" && pixelColor.Name != "ffffffff")
                     {
                         sb.AppendLine($"{x.ToString(cultureInfo)};{y.ToString(cultureInfo)}");
                     }

@@ -4,7 +4,7 @@
         a partir de la clé s, on a les contours avec s +/- 1
 
     - pour chaque s du contour, tableau selon l'angle 360 qui donne un tuble <distance, autre s projetté à la distance>
-    24166 pixels pour les contours * 360 = 8 699 760 entrées dans le tableau
+    11714 pixels pour les contours * 360 = 4 217 040 entrées dans le tableau
 
     ALGO : 
         partant d'un s, get autre s projeté à la distance
@@ -86,10 +86,6 @@ using (var image = new Bitmap(System.Drawing.Image.FromFile(inputPath)))
     outputMap.Save(outputMapPath);
     outputMap.Dispose();
 }
-
-
-
-
 
 ImageToPixels.ExtractPixels(outputMapPath);
 

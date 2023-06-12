@@ -3,6 +3,8 @@ import { Port } from 'src/app/model/port';
 import { fromLatLon } from 'src/app/calculations/utm-utils';
 import { utmToPixels } from 'src/app/calculations/utm-to-pixels';
 import { Size } from 'src/app/model/size';
+import { Segment } from 'src/app/model/segment';
+
 
 @Component({
   selector: 'app-main-page',
@@ -24,6 +26,13 @@ export class MainPageComponent implements OnInit, AfterViewInit {
     width:1196,
     height:557,
   };
+
+  public continentSeparators:Segment[] = [
+    {
+      segmentStart:{x:779,y:233}, 
+      segmentEnd:{x:773,y:363}
+    }
+  ];
 
   constructor() {
   }

@@ -41,9 +41,10 @@ import { AppComponent } from './app.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
 import { AuthInterceptor } from './services/http/http-interceptor';
 import { PortComponent } from './components/port/port.component';
+import { LineComponent } from './components/line/line.component';
 
 @NgModule({
-  declarations: [AppComponent, MainPageComponent, PortComponent],
+  declarations: [AppComponent, MainPageComponent, PortComponent, LineComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
