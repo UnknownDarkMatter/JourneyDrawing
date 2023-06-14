@@ -2,7 +2,9 @@
 using System.Globalization;
 using System.Text;
 
-public static class BordersTracing
+namespace ExtractPixels;
+
+public class BordersTracing
 {
     public const int MaxDepth = 5;
     public static Color BorderColor = Color.Blue;
@@ -13,11 +15,17 @@ public static class BordersTracing
         Cross = 1,
         Aside = 2
     }
-    public static void DoTraceBorders(int xStart, int yStart, Bitmap outputMap)
+    private IEnumerable<IPixelHandler> _pixelHandlers;
+    public BordersTracing(IEnumerable<IPixelHandler> pixelHandlers)
+    {
+        _pixelHandlers = pixelHandlers;
+    }
+
+    public void DoTraceBorders(int xStart, int yStart, Bitmap outputMap, int continentNumber, ref int s)
     {
         string inputPath = Path.Combine(Environment.CurrentDirectory, "image.png");
         string outputPath = Path.Combine(Environment.CurrentDirectory, "image_borders.png");
-        using (var image = new Bitmap(System.Drawing.Image.FromFile(inputPath)))
+        using (var image = new Bitmap(Image.FromFile(inputPath)))
         {
             int width = image.Width;
             int height = image.Height;
@@ -26,6 +34,8 @@ public static class BordersTracing
             int y1 = yStart;
             var foundPixels = new List<Tuple<int, int>>();
             image.SetPixel(x1, y1, Color.Blue);
+            ProcessPixel(x1, y1, continentNumber, ref s);
+
             while (TryGetNextBorderPixel(x1, y1, foundPixels, image, out int x2, out int y2) > 0)
             {
                 image.SetPixel(x2, y2, BorderColor);
@@ -33,10 +43,20 @@ public static class BordersTracing
 
                 outputMap.SetPixel(x2, y2, Color.Black);
 
+                ProcessPixel(x1, y1, continentNumber, ref s);
+
                 foundPixels.Add(new Tuple<int, int>(x2, y2));
                 x1 = x2;
                 y1 = y2;
             }
+        }
+    }
+
+    private void ProcessPixel(int x, int y, int continentNumber, ref int s)
+    {
+        foreach(var handler in _pixelHandlers)
+        {
+            handler.AddPixel(x, y, continentNumber, ref s);
         }
     }
 
