@@ -19,6 +19,9 @@ public class MapPreprocessingGenerator : IPixelHandler
     /// </summary>
     private Dictionary<int, Dictionary<int, BorderWalkingPoint>> _borderWalkingPointsFromXAndY;
 
+    private BorderWalkingPoint _firstBorderWalkingPoint = null;
+    private BorderWalkingPoint _previousBorderWalkingPoint = null;
+
     public MapPreprocessingGenerator()
     {
         _borderWalkingPoints = new Dictionary<int, BorderWalkingPoint>();
@@ -38,7 +41,47 @@ public class MapPreprocessingGenerator : IPixelHandler
             _borderWalkingPointsFromXAndY.Add(x, borderWalkingPointsFromY);
         }
         borderWalkingPointsFromY.Add(y, borderWalkingPoint);
+
+        if(_previousBorderWalkingPoint != null)
+        {
+            _previousBorderWalkingPoint.SPlus1 = borderWalkingPoint.S;
+            borderWalkingPoint.SMinus1 = _previousBorderWalkingPoint.S;
+        }
+
+        LinkFirstAndLastOfContinent(borderWalkingPoint);
+        _previousBorderWalkingPoint = borderWalkingPoint;
         s++;
+    }
+
+    /// <summary>
+    /// Link the first borderWalkingPoint du continent avec le dernier en utilisant les variables SPlus1 et SMinus1
+    /// </summary>
+    /// <param name="borderWalkingPoint"></param>
+    public void LinkFirstAndLastOfContinent(BorderWalkingPoint borderWalkingPoint)
+    {
+        //setup _firstBorderWalkingPoint
+        if (_firstBorderWalkingPoint == null)
+        {
+            _firstBorderWalkingPoint = borderWalkingPoint;
+        }
+        if(_previousBorderWalkingPoint == null
+            || (borderWalkingPoint != null 
+                && _previousBorderWalkingPoint.ContinentNumber != borderWalkingPoint.ContinentNumber))
+        {
+            _firstBorderWalkingPoint = borderWalkingPoint;
+        }
+
+        if(_previousBorderWalkingPoint == null)
+        {
+            return;
+        }
+
+        if(borderWalkingPoint == null 
+            || _previousBorderWalkingPoint.ContinentNumber != borderWalkingPoint.ContinentNumber)
+        {
+            _firstBorderWalkingPoint.SMinus1 = _previousBorderWalkingPoint.S;
+            _previousBorderWalkingPoint.SPlus1 = _firstBorderWalkingPoint.S;
+        }
     }
 
     /// <summary>

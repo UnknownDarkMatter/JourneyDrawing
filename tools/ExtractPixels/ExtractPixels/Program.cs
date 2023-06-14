@@ -106,5 +106,5 @@ using (var image = new Bitmap(Image.FromFile(inputPath)))
 
 ImageToPixels.ExtractPixels(outputMapPath);
 
-
+mapPreprocessingGenerator.LinkFirstAndLastOfContinent(null);
 mapPreprocessingGenerator.Step1GenerateBorderWalkingVariable();

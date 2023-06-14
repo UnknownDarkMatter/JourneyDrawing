@@ -17,6 +17,9 @@ public class BorderWalkingPoint
 
     public int ContinentNumber { get; set; }
 
+    public int SPlus1 { get; set; }
+    public int SMinus1 { get; set; }
+
     public BorderWalkingPoint(int s, int x, int y, int continentNumber)
     {
         S = s;
