@@ -59,6 +59,15 @@ public class MapPreprocessingGenerator : IPixelHandler
     /// <param name="borderWalkingPoint"></param>
     public void LinkFirstAndLastOfContinent(BorderWalkingPoint borderWalkingPoint)
     {
+
+        if (_previousBorderWalkingPoint != null && borderWalkingPoint != null
+            && borderWalkingPoint.ContinentNumber != _previousBorderWalkingPoint.ContinentNumber)
+        {
+            _firstBorderWalkingPoint.SMinus1 = _previousBorderWalkingPoint.S;
+            _previousBorderWalkingPoint.SPlus1 = _firstBorderWalkingPoint.S;
+        }
+
+
         //setup _firstBorderWalkingPoint
         if (_firstBorderWalkingPoint == null)
         {
@@ -76,12 +85,11 @@ public class MapPreprocessingGenerator : IPixelHandler
             return;
         }
 
-        if(borderWalkingPoint == null 
-            || _previousBorderWalkingPoint.ContinentNumber != borderWalkingPoint.ContinentNumber)
+        if (borderWalkingPoint == null)
         {
             _firstBorderWalkingPoint.SMinus1 = _previousBorderWalkingPoint.S;
             _previousBorderWalkingPoint.SPlus1 = _firstBorderWalkingPoint.S;
-        }
+        } 
     }
 
     /// <summary>
@@ -90,6 +98,18 @@ public class MapPreprocessingGenerator : IPixelHandler
     public void Step1GenerateBorderWalkingVariable()
     {
 
+    }
+
+
+    public void Dump(string debugDumpPath)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("Continent;S;SPlus1;SMinus1");
+        foreach(var p in _borderWalkingPoints.Values)
+        {
+            sb.AppendLine($"{p.ContinentNumber};{p.S};{p.SPlus1};{p.SMinus1}");
+        }
+        File.WriteAllText(debugDumpPath, sb.ToString());
     }
 
 }

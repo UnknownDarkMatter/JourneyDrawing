@@ -25,6 +25,7 @@ using System.Drawing;
 
 string inputPath = Path.Combine(Environment.CurrentDirectory, "image.png");
 string outputMapPath = Path.Combine(Environment.CurrentDirectory, "map.png");
+string debugDumpPath = Path.Combine(Environment.CurrentDirectory, "dump.csv");
 
 var mapPreprocessingGenerator = new MapPreprocessingGenerator();
 
@@ -97,7 +98,9 @@ using (var image = new Bitmap(Image.FromFile(inputPath)))
     }
     else
     {
+        bordersTracing.DoTraceBorders(137, 265, outputMap, i++, ref s);//
         bordersTracing.DoTraceBorders(37, 226, outputMap, i++, ref s);//
+        bordersTracing.DoTraceBorders(20, 299, outputMap, i++, ref s);//
     }
 
     outputMap.Save(outputMapPath);
@@ -108,3 +111,4 @@ ImageToPixels.ExtractPixels(outputMapPath);
 
 mapPreprocessingGenerator.LinkFirstAndLastOfContinent(null);
 mapPreprocessingGenerator.Step1GenerateBorderWalkingVariable();
+mapPreprocessingGenerator.Dump(debugDumpPath);
