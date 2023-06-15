@@ -56,7 +56,7 @@ using (var image = new Bitmap(Image.FromFile(inputPath)))
     int i = 1;//continent number
     int s = 1;//variable indicating progress when walking along the continents
 
-    var prod = true;
+    var prod = false;
     if (prod)
     {
         //bordersTracing.DoTraceBorders(1847, 75, outputMap, i++, ref s);//continent eurasien
@@ -104,9 +104,8 @@ using (var image = new Bitmap(Image.FromFile(inputPath)))
     }
     else
     {
-        bordersTracing.DoTraceBorders(137, 265, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(37, 226, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(20, 299, outputMap, i++, ref s);//
+        bordersTracing.DoTraceBorders(26, 222, outputMap, i++, ref s);//
+        bordersTracing.DoTraceBorders(11, 243, outputMap, i++, ref s);//
     }
 
     outputMap.Save(outputMapPath);
@@ -119,7 +118,11 @@ mapPreprocessingGenerator.LinkFirstAndLastOfContinent(null);
 //mapPreprocessingGenerator.Dump(debugDumpPath);
 
 File.Copy(outputMapPath, workMapPath, true);
-mapPreprocessingGenerator.Step1GenerateBorderWalkingVariable();
+
+Console.WriteLine("Veuillez ouvrir avec paint l'image suivante et remplir les continents avec une couleur");
+Console.WriteLine($"Fichier : {workMapPath}");
+Console.ReadLine();
 
 
-
+Console.WriteLine("ended");
+Console.ReadLine();
