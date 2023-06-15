@@ -23,9 +23,13 @@
 using ExtractPixels;
 using System.Drawing;
 
+//image d'entrée : continents délimités par une fine ligne de 1 pixels
 string inputPath = Path.Combine(Environment.CurrentDirectory, "image.png");
+//carte de sortie
 string outputMapPath = Path.Combine(Environment.CurrentDirectory, "map.png");
 string debugDumpPath = Path.Combine(Environment.CurrentDirectory, "dump.csv");
+//carte de travail
+string workMapPath = Path.Combine(Environment.CurrentDirectory, "map_work.png");
 
 var mapPreprocessingGenerator = new MapPreprocessingGenerator();
 
@@ -112,3 +116,6 @@ ImageToPixels.ExtractPixels(outputMapPath);
 mapPreprocessingGenerator.LinkFirstAndLastOfContinent(null);
 mapPreprocessingGenerator.Step1GenerateBorderWalkingVariable();
 mapPreprocessingGenerator.Dump(debugDumpPath);
+
+
+File.Copy(outputMapPath, workMapPath, true);
