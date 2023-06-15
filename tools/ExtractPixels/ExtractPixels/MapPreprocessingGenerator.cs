@@ -109,7 +109,17 @@ public class MapPreprocessingGenerator : IPixelHandler
         File.WriteAllText(debugDumpPath, sb.ToString());
     }
 
-    public List<Tuple<int, int>> GetLine(int x1, int y1, int x2, int y2)
+    public List<List<Tuple<int, int>>> GetLineForthAndBack(int x1, int y1, int x2, int y2, int width, int height)
+    {
+        var lines = new List<List<Tuple<int, int>>>();
+        var line = GetLineDirect(x1, y1, x2, y2);
+        lines.Add(line);
+        line = GetLineIndirect(x1, y1, x2, y2, width, height);
+        lines.Add(line);
+        return lines;
+    }
+
+    public List<Tuple<int, int>> GetLineDirect(int x1, int y1, int x2, int y2)
     {
         var resultPixels = new List<Tuple<int, int>>();
 
@@ -155,6 +165,57 @@ public class MapPreprocessingGenerator : IPixelHandler
 
         return resultPixels;
     }
+
+    public List<Tuple<int, int>> GetLineIndirect(int x1, int y1, int x2, int y2, int width, int height)
+    {
+        var resultPixels = new List<Tuple<int, int>>();
+        if(y1 == y2) { return resultPixels; }
+
+        if (x1 > x2)
+        {
+            var xTmp = x2;
+            var yTmp = y2;
+            x2 = x1;
+            y2 = y1;
+            x1 = xTmp;
+            y1 = yTmp;
+        }
+
+        var a = (y1 - y2) / (x1 - x2);
+        var b = y1 - (a * x1);
+
+        int previousY = -1;
+        int x = x1;
+        while( x < x2) 
+        {
+            var y = (a * x) + b;
+            resultPixels.Add(new Tuple<int, int>(x, y));
+
+            if (x != x1)
+            {
+                if (y > previousY)
+                {
+                    for (int yTmp = previousY; yTmp <= y; yTmp++)
+                    {
+                        resultPixels.Add(new Tuple<int, int>(x, yTmp));
+                    }
+                }
+                else
+                {
+                    for (int yTmp = y; yTmp <= previousY; yTmp++)
+                    {
+                        resultPixels.Add(new Tuple<int, int>(x, yTmp));
+                    }
+                }
+            }
+            resultPixels.Add(new Tuple<int, int>(x, y));
+            previousY = y;
+            x--;
+        }
+
+        return resultPixels;
+    }
+
 
     public void GenerateJourneys()
     {
