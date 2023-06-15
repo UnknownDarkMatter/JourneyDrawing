@@ -35,19 +35,19 @@ public class MapPreprocessingGenerator : IPixelHandler
     /// </summary>
     public void AddPixel(int x, int y, int continentNumber, ref int s)
     {
-        if(_borderWalkingPointsFromXAndY.ContainsKey(x) && _borderWalkingPointsFromXAndY[x].ContainsKey(y)) { return; }
+        if (_borderWalkingPointsFromXAndY.ContainsKey(x) && _borderWalkingPointsFromXAndY[x].ContainsKey(y)) { return; }
 
         var borderWalkingPoint = new BorderWalkingPoint(s, x, y, continentNumber);
         _borderWalkingPoints.Add(s, borderWalkingPoint);
         Dictionary<int, BorderWalkingPoint> borderWalkingPointsFromY = _borderWalkingPointsFromXAndY.ContainsKey(x) ? _borderWalkingPointsFromXAndY[x] : null;
-        if(borderWalkingPointsFromY == null)
+        if (borderWalkingPointsFromY == null)
         {
             borderWalkingPointsFromY = new Dictionary<int, BorderWalkingPoint>();
             _borderWalkingPointsFromXAndY.Add(x, borderWalkingPointsFromY);
         }
         borderWalkingPointsFromY.Add(y, borderWalkingPoint);
 
-        if(_previousBorderWalkingPoint != null)
+        if (_previousBorderWalkingPoint != null)
         {
             _previousBorderWalkingPoint.SPlus1 = borderWalkingPoint.S;
             borderWalkingPoint.SMinus1 = _previousBorderWalkingPoint.S;
@@ -78,14 +78,14 @@ public class MapPreprocessingGenerator : IPixelHandler
         {
             _firstBorderWalkingPoint = borderWalkingPoint;
         }
-        if(_previousBorderWalkingPoint == null
-            || (borderWalkingPoint != null 
+        if (_previousBorderWalkingPoint == null
+            || (borderWalkingPoint != null
                 && _previousBorderWalkingPoint.ContinentNumber != borderWalkingPoint.ContinentNumber))
         {
             _firstBorderWalkingPoint = borderWalkingPoint;
         }
 
-        if(_previousBorderWalkingPoint == null)
+        if (_previousBorderWalkingPoint == null)
         {
             return;
         }
@@ -94,20 +94,9 @@ public class MapPreprocessingGenerator : IPixelHandler
         {
             _firstBorderWalkingPoint.SMinus1 = _previousBorderWalkingPoint.S;
             _previousBorderWalkingPoint.SPlus1 = _firstBorderWalkingPoint.S;
-        } 
-    }
-
-
-    public void Dump(string debugDumpPath)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine("Continent;S;SPlus1;SMinus1");
-        foreach(var p in _borderWalkingPoints.Values)
-        {
-            sb.AppendLine($"{p.ContinentNumber};{p.S};{p.SPlus1};{p.SMinus1}");
         }
-        File.WriteAllText(debugDumpPath, sb.ToString());
     }
+
 
     public List<List<Tuple<int, int>>> GetLineForthAndBack(int x1, int y1, int x2, int y2, int width, int height)
     {
@@ -115,11 +104,14 @@ public class MapPreprocessingGenerator : IPixelHandler
         var line = GetLineDirect(x1, y1, x2, y2);
         lines.Add(line);
         line = GetLineIndirect(x1, y1, x2, y2, width, height);
-        lines.Add(line);
+        if (line.Any())
+        {
+            lines.Add(line);
+        }
         return lines;
     }
 
-    public List<Tuple<int, int>> GetLineDirect(int x1, int y1, int x2, int y2)
+    public List<Tuple<int, int>> GetLineDirect(decimal x1, decimal y1, decimal x2, decimal y2)
     {
         var resultPixels = new List<Tuple<int, int>>();
 
@@ -136,40 +128,40 @@ public class MapPreprocessingGenerator : IPixelHandler
         var a = (y1 - y2) / (x1 - x2);
         var b = y1 - (a * x1);
 
-        int previousY = -1;
+        decimal previousY = -1;
         for (var x = x1; x <= x2; x++)
         {
             var y = (a * x) + b;
-             resultPixels.Add(new Tuple<int, int>(x, y));
+            resultPixels.Add(new Tuple<int, int>((int)x, (int)y));
 
             if (x != x1)
             {
-                if(y > previousY)
+                if (y > previousY)
                 {
-                    for (int yTmp = previousY; yTmp <= y; yTmp++)
+                    for (decimal yTmp = previousY; yTmp <= y; yTmp++)
                     {
-                        resultPixels.Add(new Tuple<int, int>(x, yTmp));
+                        resultPixels.Add(new Tuple<int, int>((int)x, (int)yTmp));
                     }
                 }
                 else
                 {
-                    for (int yTmp = y; yTmp <= previousY; yTmp++)
+                    for (decimal yTmp = y; yTmp <= previousY; yTmp++)
                     {
-                        resultPixels.Add(new Tuple<int, int>(x, yTmp));
+                        resultPixels.Add(new Tuple<int, int>((int)x, (int)yTmp));
                     }
                 }
             }
-            resultPixels.Add(new Tuple<int, int>(x, y));
+            resultPixels.Add(new Tuple<int, int>((int)x, (int)y));
             previousY = y;
         }
 
         return resultPixels;
     }
 
-    public List<Tuple<int, int>> GetLineIndirect(int x1, int y1, int x2, int y2, int width, int height)
+    public List<Tuple<int, int>> GetLineIndirect(decimal x1, decimal y1, decimal x2, decimal y2, decimal width, decimal height)
     {
         var resultPixels = new List<Tuple<int, int>>();
-        if(y1 == y2) { return resultPixels; }
+        if (y1 == y2) { return resultPixels; }
 
         if (x1 > x2)
         {
@@ -181,35 +173,52 @@ public class MapPreprocessingGenerator : IPixelHandler
             y1 = yTmp;
         }
 
-        var a = (y1 - y2) / (x1 - x2);
+        y1 = height - 1 - y1;
+        y2 = height - 1 - y2;
+        var heightInPixels = 1;
+
+        var a = (y2 - y1) / (x2 - x1);//y=a*x+b; (y-b)=a*x; x=(y-b)/a;
         var b = y1 - (a * x1);
 
-        int previousY = -1;
-        int x = x1;
-        while( x < x2) 
+        var xMinNegativeGradient = (height -1 - b) / a;//pente diminue y qd x diminue (a<0), x<xMin => y<0,
+                                          //y passe a height -1, x passe a (height - 1-b)/a
+        xMinNegativeGradient = xMinNegativeGradient <= 0 ? 1 : xMinNegativeGradient;
+        xMinNegativeGradient = xMinNegativeGradient >= width ? (width - 1) : xMinNegativeGradient;
+
+        var xMinPositiveGradient = (heightInPixels - b) / a; //pente diminue y qd x diminue (a>0), x<xMin => y>=height,  
+                                                         //y passe a 0, x passe a (1 -b)/ a
+        xMinPositiveGradient = xMinPositiveGradient <= 0 ? 1 : xMinPositiveGradient;
+        xMinPositiveGradient = xMinPositiveGradient >= width ? (width - 1) : xMinPositiveGradient;
+
+        decimal x = x1 - 1;
+        var previousX = x;
+        var inversionDone = false;
+        while (!inversionDone || x > x2)
         {
             var y = (a * x) + b;
-            resultPixels.Add(new Tuple<int, int>(x, y));
+            y = height - 1 - y;
 
-            if (x != x1)
+            if (a > 0)
             {
-                if (y > previousY)
+                if (x < xMinPositiveGradient)
                 {
-                    for (int yTmp = previousY; yTmp <= y; yTmp++)
-                    {
-                        resultPixels.Add(new Tuple<int, int>(x, yTmp));
-                    }
-                }
-                else
-                {
-                    for (int yTmp = y; yTmp <= previousY; yTmp++)
-                    {
-                        resultPixels.Add(new Tuple<int, int>(x, yTmp));
-                    }
+                    inversionDone = true;
+                    x = (1 - b) / a;
+                    y = 1;
                 }
             }
-            resultPixels.Add(new Tuple<int, int>(x, y));
-            previousY = y;
+            else
+            {
+                if (x < xMinNegativeGradient)
+                {
+                    inversionDone = true;
+                    x = (heightInPixels - 1 - b) / a;
+                    y = heightInPixels - 1;
+                }
+            }
+
+            resultPixels.Add(new Tuple<int, int>((int)x, (int)y));
+            previousX = x;
             x--;
         }
 
@@ -229,5 +238,38 @@ public class MapPreprocessingGenerator : IPixelHandler
         }
     }
 
+    public void Dump(string debugDumpPath)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("Continent;S;SPlus1;SMinus1");
+        foreach (var p in _borderWalkingPoints.Values)
+        {
+            sb.AppendLine($"{p.ContinentNumber};{p.S};{p.SPlus1};{p.SMinus1}");
+        }
+        File.WriteAllText(debugDumpPath, sb.ToString());
+    }
 
+    public void DrawLine(int x1, int y1, int x2, int y2, int width, int height, string imageFilePath)
+    {
+        var lines = GetLineForthAndBack(x1, y1, x2, y2, width, height);
+        Bitmap outputMap;
+        using (var image = new Bitmap(System.Drawing.Image.FromFile(imageFilePath)))
+        {
+            width = image.Width;
+            height = image.Height;
+            outputMap = image.Clone() as Bitmap;
+
+            var firstLine = true;
+            foreach (var line in lines)
+            {
+                foreach (var pixel in line)
+                {
+                    outputMap.SetPixel(pixel.Item1, pixel.Item2, firstLine ? Color.Blue : Color.Green);
+                }
+                firstLine = false;
+            }
+            outputMap.Save(imageFilePath + "_lines.png");
+
+        }
+    }
 }

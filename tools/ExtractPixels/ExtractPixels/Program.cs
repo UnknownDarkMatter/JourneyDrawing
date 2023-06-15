@@ -104,8 +104,8 @@ using (var image = new Bitmap(Image.FromFile(inputPath)))
     }
     else
     {
-        bordersTracing.DoTraceBorders(26, 222, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(11, 243, outputMap, i++, ref s);//
+        //bordersTracing.DoTraceBorders(26, 222, outputMap, i++, ref s);//
+        //bordersTracing.DoTraceBorders(11, 243, outputMap, i++, ref s);//
     }
 
     outputMap.Save(outputMapPath);
@@ -123,6 +123,13 @@ Console.WriteLine("Veuillez ouvrir avec paint l'image suivante et remplir les co
 Console.WriteLine($"Fichier : {workMapPath}");
 Console.ReadLine();
 
+using (var image = new Bitmap(Image.FromFile(workMapPath)))
+{
+    width = image.Width;
+    height = image.Height;
+}
+
+mapPreprocessingGenerator.DrawLine(26, 219, 189, 304, width, height, workMapPath );
 
 Console.WriteLine("ended");
 Console.ReadLine();
