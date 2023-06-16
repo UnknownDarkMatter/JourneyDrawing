@@ -20,124 +20,64 @@
         une valeur del'identifiant de s pour decroitre de 1
 
 */
-using ExtractPixels;
+using ExtractPixels.MapProcessing;
+using ExtractPixels.MapProcessing.Model;
 using System.Drawing;
 
-//image d'entrée : continents délimités par une fine ligne de 1 pixels
-string inputPath = Path.Combine(Environment.CurrentDirectory, "image.png");
-//carte de sortie
-string outputMapPath = Path.Combine(Environment.CurrentDirectory, "map.png");
-//carte de travail
-string workMapPath = Path.Combine(Environment.CurrentDirectory, "map_work.png");
+string imageFilePath = Path.Combine(Environment.CurrentDirectory, "image.png");
+string workMapPath = Path.Combine(Environment.CurrentDirectory, "map_step1.png");
+string workMapPath2 = Path.Combine(Environment.CurrentDirectory, "map_step2.png");
 
-//fichier de debug
-string debugDumpPath = Path.Combine(Environment.CurrentDirectory, "dump.csv");
+var borderWalkingPointsCollection = new BorderPointCollection();
+var borderWalkingPointExtractor = new BorderWalkingPointExtractor(new List<IMapPointHandler>() { borderWalkingPointsCollection });
 
-var mapPreprocessingGenerator = new MapPreprocessingGenerator();
+var prod = false;
+int i = 1;//continent number
+int s = 1;//variable indicating progress when walking along the continents
 
-int width;
-int height;
-using (var image = new Bitmap(Image.FromFile(inputPath)))
+using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
 {
-    width = image.Width;
-    height = image.Height;
-    var outputMap = image.Clone() as Bitmap;
+    int width = imageSource.Width;
+    int height = imageSource.Height;
+
+    var imageWork = imageSource.Clone() as Bitmap;
 
     for (int x = 0; x < width; x++)
     {
         for (int y = 0; y < height; y++)
         {
-            outputMap.SetPixel(x, y, Color.White);
+            imageWork.SetPixel(x, y, Color.White);
         }
     }
 
 
-    var bordersTracing = new BordersTracing(new List<IPixelHandler>() { mapPreprocessingGenerator });
-    int i = 1;//continent number
-    int s = 1;//variable indicating progress when walking along the continents
-
-    var prod = true;
     if (prod)
     {
-        bordersTracing.DoTraceBorders(1847, 75, outputMap, i++, ref s);//continent eurasien
-        bordersTracing.DoTraceBorders(973, 211, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(972, 220, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(991, 236, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(904, 136, outputMap, i++, ref s);//angleterre
-        bordersTracing.DoTraceBorders(875, 153, outputMap, i++, ref s);//irlande
-        bordersTracing.DoTraceBorders(896, 248, outputMap, i++, ref s);//contient africain
-        bordersTracing.DoTraceBorders(1177, 497, outputMap, i++, ref s);//madagascar
-        bordersTracing.DoTraceBorders(1657, 488, outputMap, i++, ref s);//australie
-        bordersTracing.DoTraceBorders(1656, 157, outputMap, i++, ref s);//japon
-        bordersTracing.DoTraceBorders(1655, 200, outputMap, i++, ref s);//japon
-        bordersTracing.DoTraceBorders(1649, 219, outputMap, i++, ref s);//japon
-        bordersTracing.DoTraceBorders(1608, 257, outputMap, i++, ref s);//japon
-        bordersTracing.DoTraceBorders(1596, 258, outputMap, i++, ref s);//japon
-        bordersTracing.DoTraceBorders(1524, 396, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1415, 403, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1470, 462, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1562, 390, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1545, 426, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1579, 426, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1539, 439, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1574, 448, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1528, 474, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1543, 474, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1538, 480, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1568, 476, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1568, 476, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1604, 434, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1693, 460, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1487, 330, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1543, 341, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1335, 386, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1677, 644, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1812, 611, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(1789, 671, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(822, 92, outputMap, i++, ref s);//islande
-        bordersTracing.DoTraceBorders(748, 2, outputMap, i++, ref s);//groenland
-        bordersTracing.DoTraceBorders(443, 339, outputMap, i++, ref s);//amerique du nord
-        bordersTracing.DoTraceBorders(526, 392, outputMap, i++, ref s);//amerique du sud
-        bordersTracing.DoTraceBorders(505, 313, outputMap, i++, ref s);//
-        bordersTracing.DoTraceBorders(557, 329, outputMap, i++, ref s);//
+
     }
     else
     {
-        //bordersTracing.DoTraceBorders(26, 222, outputMap, i++, ref s);//
-        //bordersTracing.DoTraceBorders(11, 243, outputMap, i++, ref s);//
+        //borderWalkingPointExtractor.ExtractBorderWalkingPoints(26, 222, i++, ref s, imageSource, imageWork, workMapPath);
+        //borderWalkingPointExtractor.ExtractBorderWalkingPoints(11, 243, i++, ref s, imageSource, imageWork, workMapPath);
     }
+    //borderWalkingPointsCollection.LinkFirstAndLastOfContinent(null);
 
-    outputMap.Save(outputMapPath);
-    outputMap.Dispose();
+
+    //File.Copy(workMapPath, workMapPath2, true);
+
+    //Console.WriteLine("Veuillez ouvrir avec paint l'image suivante et remplir les continents avec une couleur");
+    //Console.WriteLine($"Fichier : {workMapPath2}");
+    //Console.ReadLine();
+
+    //MapUtils.DrawLine(new MapPoint(26, 219), new MapPoint(189, 304), width, height, imageFilePath);//pente negative, inversion y en biais
+    //MapUtils.DrawLine(new MapPoint(77, 94), new MapPoint(80, 333), width, height, imageFilePath);//pente negative vertical
+    //MapUtils.DrawLine(new MapPoint(124, 285), new MapPoint(212, 281), width, height, imageFilePath);//pente negative horizontal
+    //MapUtils.DrawLine(new MapPoint(43, 330), new MapPoint(118, 232), width, height, imageFilePath);//pente positive, inversion y en biais
+    //MapUtils.DrawLine(new MapPoint(98, 340), new MapPoint(103, 264), width, height, imageFilePath);//pente positive vertical
+    MapUtils.DrawLine(new MapPoint(254, 459), new MapPoint(350, 450), width, height, imageFilePath);//pente positive horizontal
+    //MapUtils.DrawLine(new MapPoint(141, 778), new MapPoint(290, 710), width, height, imageFilePath);//pente positive diagonale
+    //MapUtils.DrawLine(new MapPoint(151, 70), new MapPoint(300, 137), width, height, imageFilePath);//pente negative diagonale
+    //MapUtils.DrawLine(new MapPoint(151, 70), new MapPoint(300, 120), width, height, imageFilePath);//pente negative diagonale
 }
-
-ImageToPixels.ExtractPixels(outputMapPath);
-
-mapPreprocessingGenerator.LinkFirstAndLastOfContinent(null);
-//mapPreprocessingGenerator.Dump(debugDumpPath);
-
-File.Copy(outputMapPath, workMapPath, true);
-
-Console.WriteLine("Veuillez ouvrir avec paint l'image suivante et remplir les continents avec une couleur");
-Console.WriteLine($"Fichier : {workMapPath}");
-Console.ReadLine();
-
-using (var image = new Bitmap(Image.FromFile(workMapPath)))
-{
-    width = image.Width;
-    height = image.Height;
-}
-
-//mapPreprocessingGenerator.DrawLine(26, 219, 189, 304, width, height, workMapPath);//pente negative, inversion y en biais
-//mapPreprocessingGenerator.DrawLine(77, 94, 80, 333, width, height, workMapPath);//pente negative vertical
-//mapPreprocessingGenerator.DrawLine(124, 285, 212, 281, width, height, workMapPath);//pente negative horizontal
-//mapPreprocessingGenerator.DrawLine(43, 330, 118, 232, width, height, workMapPath);//pente positive, inversion y en biais
-//mapPreprocessingGenerator.DrawLine(98, 340, 103, 264, width, height, workMapPath);//pente positive vertical
-//mapPreprocessingGenerator.DrawLine(254, 459, 350, 450, width, height, workMapPath);//pente positive horizontal
-//mapPreprocessingGenerator.DrawLine(141, 778, 290, 710, width, height, workMapPath);//pente positive diagonale
-//mapPreprocessingGenerator.DrawLine(151, 70, 300, 137, width, height, workMapPath);//pente negative diagonale
-mapPreprocessingGenerator.DrawLine(151, 70, 300, 120, width, height, workMapPath);//pente negative diagonale
-
 
 Console.WriteLine("ended");
-Console.ReadLine();

@@ -2,6 +2,9 @@
 using System.Globalization;
 using System.Text;
 
+namespace ExtractPixels.Deprecated;
+
+/*
 public static class ImageToPixels
 {
     public static void ExtractPixels(string inputPath)
@@ -40,3 +43,4 @@ public static class ImageToPixels
 
     }
 }
+*/

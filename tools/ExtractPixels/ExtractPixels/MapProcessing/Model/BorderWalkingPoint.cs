@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ExtractPixels.Model;
+namespace ExtractPixels.MapProcessing.Model;
 
 public class BorderWalkingPoint
 {

@@ -2,8 +2,9 @@
 using System.Globalization;
 using System.Text;
 
-namespace ExtractPixels;
+namespace ExtractPixels.Deprecated;
 
+/*
 public class BordersTracing
 {
     public const int MaxDepth = 5;
@@ -54,7 +55,7 @@ public class BordersTracing
 
     private void ProcessPixel(int x, int y, int continentNumber, ref int s)
     {
-        foreach(var handler in _pixelHandlers)
+        foreach (var handler in _pixelHandlers)
         {
             handler.AddPixel(x, y, continentNumber, ref s);
         }
@@ -87,8 +88,8 @@ public class BordersTracing
             result.Add(new Tuple<int, int>(x + 1, y));
             result.Add(new Tuple<int, int>(x - 1, y));
         }
-        result = result.Where((tuple) => 
-            tuple.Item1 < image.Width 
+        result = result.Where((tuple) =>
+            tuple.Item1 < image.Width
             && tuple.Item1 >= 0
             && tuple.Item2 < image.Height
             && tuple.Item2 >= 0
@@ -104,14 +105,14 @@ public class BordersTracing
         int x1ToTest = 0;
         int y1ToTest = 0;
 
-        var count = TryGetNextBorderPixelRecursive(x0, y0, x1, y1, ref x1ToTest, ref y1ToTest, foundPixels, image, depth, 
+        var count = TryGetNextBorderPixelRecursive(x0, y0, x1, y1, ref x1ToTest, ref y1ToTest, foundPixels, image, depth,
             maxDepth, out x2, out y2, out int foundDepth);
         x2 = x1ToTest;
         y2 = y1ToTest;
         return count;
     }
 
-    private static int TryGetNextBorderPixelRecursive(int x0, int y0, int x1, int y1, ref int x1ToTest, ref int y1ToTest, 
+    private static int TryGetNextBorderPixelRecursive(int x0, int y0, int x1, int y1, ref int x1ToTest, ref int y1ToTest,
         List<Tuple<int, int>> foundPixels,
         Bitmap image, int depth, int maxDepth, out int x2, out int y2, out int foundDepth)
     {
@@ -123,14 +124,14 @@ public class BordersTracing
             return 1;
         }
 
-        if(depth == 1)
+        if (depth == 1)
         {
             x1ToTest = x1;
             y1ToTest = y1;
         }
 
-        var foundPixelsTmp = foundPixels.Select(m=>m).ToList();
-        var tuples = TryGetNextBorderPixelNonRecursive(x0 ,x0, x1, y1, foundPixelsTmp, image, out int x2Tmp, out int y2Tmp);
+        var foundPixelsTmp = foundPixels.Select(m => m).ToList();
+        var tuples = TryGetNextBorderPixelNonRecursive(x0, x0, x1, y1, foundPixelsTmp, image, out int x2Tmp, out int y2Tmp);
         if (!tuples.Any())
         {
             x2 = 0;
@@ -138,7 +139,7 @@ public class BordersTracing
             foundDepth = depth;
             return 0;
         }
-        
+
         var childResults = new List<Tuple<int, int, int, int, int>>();
         foreach (var childTuple in tuples)
         {
@@ -160,11 +161,11 @@ public class BordersTracing
         return 1;
     }
 
-    private static List<Tuple<int, int>> TryGetNextBorderPixelNonRecursive(int x0, int y0, int x1, int y1, List<Tuple<int, int>> foundPixels, 
+    private static List<Tuple<int, int>> TryGetNextBorderPixelNonRecursive(int x0, int y0, int x1, int y1, List<Tuple<int, int>> foundPixels,
         Bitmap image, out int x2, out int y2)
     {
         var neighBourPixel = GetNeighbourPixels(x1, y1, image, PixelPosition.Both)
-            .Where((t) => 
+            .Where((t) =>
                 HasEmptyPixelsInNeighbourhood(t.Item1, t.Item2, image)
                 && image.GetPixel(t.Item1, t.Item2).Name != "0"
                 && image.GetPixel(t.Item1, t.Item2).Name != "ffffffff"
@@ -173,7 +174,7 @@ public class BordersTracing
 
         //A TESTER
         var startBourPixel = new List<Tuple<int, int>>();
-        foreach(var t in neighBourPixel)
+        foreach (var t in neighBourPixel)
         {
             var neighBourTmp = GetNeighbourPixels(t.Item1, t.Item2, image, PixelPosition.Both);
             startBourPixel.AddRange(neighBourTmp.Where(t1 => image.GetPixel(t1.Item1, t1.Item2).ToArgb() == BorderColor.ToArgb()));
@@ -214,8 +215,8 @@ public class BordersTracing
                 )
             );
 
-        if (neighBourPixel.Count() == 0 
-            && 1 == crossNeighBourHoodPixels.Count(t=>
+        if (neighBourPixel.Count() == 0
+            && 1 == crossNeighBourHoodPixels.Count(t =>
                 IgnoreWhenNumberOfAside > GetNeighbourPixels(t.Item1, t.Item2, image, PixelPosition.Aside)
                         .Count(t4 => image.GetPixel(t4.Item1, t4.Item2).ToArgb() == BorderColor.ToArgb())))
         {
@@ -229,9 +230,10 @@ public class BordersTracing
                 );
         }
 
-        if (!neighBourPixel.Any()) { 
-            x2 = 0; 
-            y2 = 0; 
+        if (!neighBourPixel.Any())
+        {
+            x2 = 0;
+            y2 = 0;
             return new List<Tuple<int, int>>();
         }
 
@@ -240,3 +242,4 @@ public class BordersTracing
         return neighBourPixel.ToList();
     }
 }
+*/
