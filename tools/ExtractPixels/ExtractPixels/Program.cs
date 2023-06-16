@@ -132,7 +132,8 @@ using (var image = new Bitmap(Image.FromFile(workMapPath)))
 //mapPreprocessingGenerator.DrawLine(26, 219, 189, 304, width, height, workMapPath);//pente negative, inversion y
 //mapPreprocessingGenerator.DrawLine(77, 94, 80, 333, width, height, workMapPath);//pente negative vertical, pas inversion y
 //mapPreprocessingGenerator.DrawLine(124, 285, 212, 281, width, height, workMapPath);//pente negative horizontal, pas inversion y
-mapPreprocessingGenerator.DrawLine(43, 330, 118, 232, width, height, workMapPath);//pente positive, inversion y
+//mapPreprocessingGenerator.DrawLine(43, 330, 118, 232, width, height, workMapPath);//pente positive, inversion y
+mapPreprocessingGenerator.DrawLine(98, 340, 103, 264, width, height, workMapPath);//pente positive vertical, pas inversion y
 
 Console.WriteLine("ended");
 Console.ReadLine();

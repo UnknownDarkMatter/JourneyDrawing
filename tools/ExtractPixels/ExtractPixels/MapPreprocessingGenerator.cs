@@ -197,6 +197,7 @@ public class MapPreprocessingGenerator : IPixelHandler
         while (!inversionDone || x > x2)
         {
             y = (a * x) + b;
+            var inversionY = (int)y < 1;
             y = height - 1 - y;
             y = y <= 0 ? 1 : y;
             var inversionDoneInThisIteration = false;
@@ -230,22 +231,48 @@ public class MapPreprocessingGenerator : IPixelHandler
                         }
                     }
 
-                    x = (1 - b) / a;
-                    if(x < 0)
+                    if (inversionY)
                     {
-                        x = width - 1;
+                        if (yBeforeInversion > previousY)
+                        {
+                            for (decimal yTmp = previousY; yTmp <= yBeforeInversion; yTmp++)
+                            {
+                                resultPixels.Add(new Tuple<int, int>((int)x, (int)yTmp));
+                            }
+                        }
+                        else
+                        {
+                            for (decimal yTmp = yBeforeInversion; yTmp <= previousY; yTmp++)
+                            {
+                                resultPixels.Add(new Tuple<int, int>((int)x, (int)yTmp));
+                            }
+                        }
+                    }
+
+                    if (inversionY)
+                    {
+                        x = (height - b) / a;
+                    }
+                    else
+                    {
+                        x = (1 - b) / a;
+                        if (x < 0)
+                        {
+                            x = width - 1;
+                        }
                     }
 
                     var yInversion = (a * x) + b;
-                    y = height - 1 - yInversion;
-                    if(y < 0)
+                    y = (int)(height - yInversion);
+                    if (y < 0)
                     {
-                        x = (height - b)/a;//x=(y-b)/a
+                        x = (height - b) / a;//x=(y-b)/a
                         y = 1;
                         yInversion = y;
                     }
                     yInversion = yInversion <= 0 ? 1 : yInversion;
                     previousY = yInversion;
+
                 }
             }
             else
@@ -277,14 +304,41 @@ public class MapPreprocessingGenerator : IPixelHandler
                         }
                     }
 
-                    x = (heightInPixels - 1 - b) / a;
-                    if (x < 0)
+                    if (inversionY)
                     {
-                        x = width - 1;
+                        if (yBeforeInversion > previousY)
+                        {
+                            for (decimal yTmp = previousY; yTmp <= yBeforeInversion; yTmp++)
+                            {
+                                resultPixels.Add(new Tuple<int, int>((int)x, (int)yTmp));
+                            }
+                        }
+                        else
+                        {
+                            for (decimal yTmp = yBeforeInversion; yTmp <= previousY; yTmp++)
+                            {
+                                resultPixels.Add(new Tuple<int, int>((int)x, (int)yTmp));
+                            }
+                        }
                     }
 
+
+                    if (inversionY)
+                    {
+                        x = (height - b) / a;
+                    }
+                    else
+                    {
+                        x = (heightInPixels - 1 - b) / a;
+                        if (x < 0)
+                        {
+                            x = width - 1;
+                        }
+                    }
+
+
                     var yInversion = (a * x) + b;
-                    y = height - 1 - yInversion;
+                    y = (int)(height - yInversion);
                     if (y < 0)
                     {
                         x = (height - b) / a;//x=(y-b)/a
@@ -315,7 +369,7 @@ public class MapPreprocessingGenerator : IPixelHandler
                 }
             }
 
-
+            y = y > height-1 ? height-1 : y;
             resultPixels.Add(new Tuple<int, int>((int)x, (int)y));
             previousY = y;
             x--;
