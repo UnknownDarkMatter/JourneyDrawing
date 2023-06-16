@@ -74,10 +74,10 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
     //MapUtils.DrawLine(new MapPoint(124, 285), new MapPoint(212, 281), width, height, imageFilePath);//pente negative horizontal
     //MapUtils.DrawLine(new MapPoint(43, 330), new MapPoint(118, 232), width, height, imageFilePath);//pente positive, inversion y en biais
     //MapUtils.DrawLine(new MapPoint(98, 340), new MapPoint(103, 264), width, height, imageFilePath);//pente positive vertical
-    MapUtils.DrawLine(new MapPoint(254, 459), new MapPoint(350, 450), width, height, imageFilePath);//pente positive horizontal
+    //MapUtils.DrawLine(new MapPoint(254, 459), new MapPoint(350, 450), width, height, imageFilePath);//pente positive horizontal
     //MapUtils.DrawLine(new MapPoint(141, 778), new MapPoint(290, 710), width, height, imageFilePath);//pente positive diagonale
     //MapUtils.DrawLine(new MapPoint(151, 70), new MapPoint(300, 137), width, height, imageFilePath);//pente negative diagonale
-    //MapUtils.DrawLine(new MapPoint(151, 70), new MapPoint(300, 120), width, height, imageFilePath);//pente negative diagonale
+    MapUtils.DrawLine(new MapPoint(151, 70), new MapPoint(300, 120), width, height, imageFilePath);//pente negative diagonale
 }
 
 Console.WriteLine("ended");
