@@ -98,15 +98,15 @@ public class MapPreprocessingGenerator : IPixelHandler
     }
 
 
-    public List<List<Tuple<int, int>>> GetLineForthAndBack(int x1, int y1, int x2, int y2, int width, int height)
+    public List<Tuple<int, int>> GetLineForthAndBack(int x1, int y1, int x2, int y2, int width, int height)
     {
-        var lines = new List<List<Tuple<int, int>>>();
+        var lines = new List<Tuple<int, int>>();
         var line = GetLineDirect(x1, y1, x2, y2);
-        lines.Add(line);
+        lines.AddRange(line);
         line = GetLineIndirect(x1, y1, x2, y2, width, height);
         if (line.Any())
         {
-            lines.Add(line);
+            lines.AddRange(line);
         }
         return lines;
     }
@@ -369,7 +369,8 @@ public class MapPreprocessingGenerator : IPixelHandler
                 }
             }
 
-            y = y > height-1 ? height-1 : y;
+            y = y > height - 1 ? height - 1 : y;
+            x = x > width - 1 ? width - 1 : x;
             resultPixels.Add(new Tuple<int, int>((int)x, (int)y));
             previousY = y;
             x--;
@@ -421,7 +422,7 @@ public class MapPreprocessingGenerator : IPixelHandler
 
     public void DrawLine(int x1, int y1, int x2, int y2, int width, int height, string imageFilePath)
     {
-        var lines = GetLineForthAndBack(x1, y1, x2, y2, width, height);
+        var pixels = GetLineForthAndBack(x1, y1, x2, y2, width, height);
         Bitmap outputMap;
         using (var image = new Bitmap(System.Drawing.Image.FromFile(imageFilePath)))
         {
@@ -429,15 +430,11 @@ public class MapPreprocessingGenerator : IPixelHandler
             height = image.Height;
             outputMap = image.Clone() as Bitmap;
 
-            var firstLine = true;
-            foreach (var line in lines)
+            foreach (var pixel in pixels)
             {
-                foreach (var pixel in line)
-                {
-                    outputMap.SetPixel(pixel.Item1, pixel.Item2, firstLine ? Color.Blue : Color.Green);
-                }
-                firstLine = false;
+                outputMap.SetPixel(pixel.Item1, pixel.Item2, Color.Blue);
             }
+
             outputMap.Save(imageFilePath + "_lines.png");
 
         }
