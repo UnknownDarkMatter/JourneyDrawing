@@ -208,9 +208,11 @@ public class MapPreprocessingGenerator : IPixelHandler
                     inversionDone = true;
                     inversionDoneInThisIteration = true;
 
+                    var yBeforeInversion = height - 1 - ((a * x) + b);
+
                     y = 1;
 
-                    if(x > xMinPositiveGradient)
+                    if(x > xMinPositiveGradient || yBeforeInversion <= 1)
                     {
                         if (y > previousY)
                         {
@@ -243,10 +245,11 @@ public class MapPreprocessingGenerator : IPixelHandler
                     inversionDone = true;
                     inversionDoneInThisIteration = true;
 
+                    var yBeforeInversion = height - 1 - ((a * x) + b);
                     y = heightInPixels - 1;
                     y = y <= 0 ? 1 : y;
 
-                    if(x > xMinNegativeGradient)
+                    if(x > xMinNegativeGradient || yBeforeInversion <= 1)
                     {
                         if (y > previousY)
                         {
