@@ -129,7 +129,8 @@ using (var image = new Bitmap(Image.FromFile(workMapPath)))
     height = image.Height;
 }
 
-mapPreprocessingGenerator.DrawLine(26, 219, 189, 304, width, height, workMapPath );
+mapPreprocessingGenerator.DrawLine(26, 219, 189, 304, width, height, workMapPath);//pente negative, inversion y
+//mapPreprocessingGenerator.DrawLine(77, 94, 80, 333, width, height, workMapPath );//vertical
 
 Console.WriteLine("ended");
 Console.ReadLine();

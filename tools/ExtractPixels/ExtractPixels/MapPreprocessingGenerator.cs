@@ -173,6 +173,7 @@ public class MapPreprocessingGenerator : IPixelHandler
             y1 = yTmp;
         }
 
+        decimal previousY = y1;
         y1 = height - 1 - y1;
         y2 = height - 1 - y2;
         var heightInPixels = 1;
@@ -191,20 +192,45 @@ public class MapPreprocessingGenerator : IPixelHandler
         xMinPositiveGradient = xMinPositiveGradient >= width ? (width - 1) : xMinPositiveGradient;
 
         decimal x = x1 - 1;
-        var previousX = x;
+        decimal y = y2;
         var inversionDone = false;
         while (!inversionDone || x > x2)
         {
-            var y = (a * x) + b;
+            y = (a * x) + b;
             y = height - 1 - y;
+            y = y <= 0 ? 1 : y;
+            var inversionDoneInThisIteration = false;
 
             if (a > 0)
             {
                 if (x < xMinPositiveGradient)
                 {
                     inversionDone = true;
-                    x = (1 - b) / a;
+                    inversionDoneInThisIteration = true;
+
                     y = 1;
+
+                    if (y > previousY)
+                    {
+                        for (decimal yTmp = previousY; yTmp <= y; yTmp++)
+                        {
+                            resultPixels.Add(new Tuple<int, int>((int)x, (int)yTmp));
+                        }
+                    }
+                    else
+                    {
+                        for (decimal yTmp = y; yTmp <= previousY; yTmp++)
+                        {
+                            resultPixels.Add(new Tuple<int, int>((int)x, (int)yTmp));
+                        }
+                    }
+
+                    x = (1 - b) / a;
+
+                    var yInversion = (a * x) + b;
+                    y = height - 1 - yInversion;
+                    yInversion = yInversion <= 0 ? 1 : yInversion;
+                    previousY = yInversion;
                 }
             }
             else
@@ -212,15 +238,76 @@ public class MapPreprocessingGenerator : IPixelHandler
                 if (x < xMinNegativeGradient)
                 {
                     inversionDone = true;
-                    x = (heightInPixels - 1 - b) / a;
+                    inversionDoneInThisIteration = true;
+
                     y = heightInPixels - 1;
+                    y = y <= 0 ? 1 : y;
+
+                    if (y > previousY)
+                    {
+                        for (decimal yTmp = previousY; yTmp <= y; yTmp++)
+                        {
+                            resultPixels.Add(new Tuple<int, int>((int)x, (int)yTmp));
+                        }
+                    }
+                    else
+                    {
+                        for (decimal yTmp = y; yTmp <= previousY; yTmp++)
+                        {
+                            resultPixels.Add(new Tuple<int, int>((int)x, (int)yTmp));
+                        }
+                    }
+
+                    x = (heightInPixels - 1 - b) / a;
+
+                    var yInversion = (a * x) + b;
+                    y = height - 1 - yInversion;
+                    yInversion = yInversion <= 0 ? 1 : yInversion;
+                    previousY = yInversion;
+
                 }
             }
 
+            if (!inversionDoneInThisIteration)
+            {
+                if (y > previousY)
+                {
+                    for (decimal yTmp = previousY; yTmp <= y; yTmp++)
+                    {
+                        resultPixels.Add(new Tuple<int, int>((int)x, (int)yTmp));
+                    }
+                }
+                else
+                {
+                    for (decimal yTmp = y; yTmp <= previousY; yTmp++)
+                    {
+                        resultPixels.Add(new Tuple<int, int>((int)x, (int)yTmp));
+                    }
+                }
+            }
+
+
             resultPixels.Add(new Tuple<int, int>((int)x, (int)y));
-            previousX = x;
+            previousY = y;
             x--;
         }
+
+        previousY = height - 1 - y2;
+        if (y > previousY)
+        {
+            for (decimal yTmp = previousY; yTmp <= y; yTmp++)
+            {
+                resultPixels.Add(new Tuple<int, int>((int)x, (int)yTmp));
+            }
+        }
+        else
+        {
+            for (decimal yTmp = y; yTmp <= previousY; yTmp++)
+            {
+                resultPixels.Add(new Tuple<int, int>((int)x, (int)yTmp));
+            }
+        }
+
 
         return resultPixels;
     }
