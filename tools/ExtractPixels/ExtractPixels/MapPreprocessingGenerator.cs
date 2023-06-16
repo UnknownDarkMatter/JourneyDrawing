@@ -231,6 +231,10 @@ public class MapPreprocessingGenerator : IPixelHandler
                     }
 
                     x = (1 - b) / a;
+                    if(x < 0)
+                    {
+                        x = width - 1;
+                    }
 
                     var yInversion = (a * x) + b;
                     y = height - 1 - yInversion;
@@ -268,6 +272,10 @@ public class MapPreprocessingGenerator : IPixelHandler
                     }
 
                     x = (heightInPixels - 1 - b) / a;
+                    if (x < 0)
+                    {
+                        x = width - 1;
+                    }
 
                     var yInversion = (a * x) + b;
                     y = height - 1 - yInversion;
