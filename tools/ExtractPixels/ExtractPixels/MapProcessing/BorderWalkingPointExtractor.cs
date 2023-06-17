@@ -20,6 +20,8 @@ public class BorderWalkingPointExtractor
     public static Color ImageBorderColor = Color.Black;
     public static Color WorkBorderColor = Color.Blue;
     public static Color SeaColor = Color.White;
+    public static Color OutMapBorderColor = Color.FromArgb(119, 255, 118);
+
     public const int MaxDepth = 5;
 
     public BorderWalkingPointExtractor(IEnumerable<IMapPointHandler> mapPointHandlers)
@@ -27,8 +29,8 @@ public class BorderWalkingPointExtractor
         _mapPointHandlers = mapPointHandlers;
     }
 
-    public void ExtractBorderWalkingPoints(int xStart, int yStart, int continentNumber, ref int s,
-        Bitmap imageSource, Bitmap imageWork, string workFilePath)
+    public void ExtractBorder(int xStart, int yStart, int continentNumber, ref int s,
+        Bitmap imageSource, Bitmap imageWork, string workFilePath, Bitmap imageOutput, string outputMapPath)
     {
         var pStart = new MapPoint(xStart, yStart);
         var p1 = new MapPoint(xStart, yStart);
@@ -36,12 +38,19 @@ public class BorderWalkingPointExtractor
         imageWork.SetPixel(pStart.X, pStart.Y, WorkBorderColor);
         imageWork.Save(workFilePath);
 
+        imageOutput.SetPixel(pStart.X, pStart.Y, OutMapBorderColor);
+        imageOutput.Save(outputMapPath);
+
+
         ProcessMapPoint(pStart, continentNumber, ref s);
 
         while (TryGetNextBorderPoint(pStart, p1, foundPixels, imageSource, imageWork, out MapPoint p2) > 0)
         {
             imageWork.SetPixel(p2.X, p2.Y, WorkBorderColor);
             imageWork.Save(workFilePath);
+
+            imageOutput.SetPixel(p2.X, p2.Y, OutMapBorderColor);
+            imageOutput.Save(outputMapPath);
 
             ProcessMapPoint(p1, continentNumber, ref s);
 
@@ -148,7 +157,8 @@ public class BorderWalkingPointExtractor
     public bool IsNextBorderPoint(MapPoint pCurrent, MapPoint pLastFound, List<MapPoint> foundPixels, 
         Bitmap imageSource, Bitmap imageWork)
     {
-        var currentIsBorder = imageSource.GetPixel(pCurrent.X, pCurrent.Y).ToArgb() == ImageBorderColor.ToArgb();
+        var color = imageSource.GetPixel(pCurrent.X, pCurrent.Y).ToArgb();
+        var currentIsBorder = color != WorkBorderColor.ToArgb() && color != SeaColor.ToArgb();
         var lastFoundIsBorder = imageWork.GetPixel(pLastFound.X, pLastFound.Y).ToArgb() == WorkBorderColor.ToArgb();
 
         var pointNeighbours = GetNeighbourPixels(pCurrent, imageSource);
