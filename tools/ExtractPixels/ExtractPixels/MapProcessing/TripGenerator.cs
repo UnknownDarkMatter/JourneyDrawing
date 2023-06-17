@@ -1,6 +1,7 @@
 ﻿using ExtractPixels.MapProcessing.Model;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,8 @@ namespace ExtractPixels.MapProcessing;
 
 public class TripGenerator
 {
+    public const int NbPixelsPointsEqual = 2;
+
     /// <summary>
     /// [S sart, S end, SeaTrip]
     /// </summary>
@@ -16,72 +19,203 @@ public class TripGenerator
 
     public TripGenerator()
     {
-        SeaTrips = new Dictionary<int,Dictionary<int, SeaTrip>>();
+        SeaTrips = new Dictionary<int, Dictionary<int, SeaTrip>>();
     }
 
-    public void CalculateAllTrips(BorderPointCollection borderWalkingPoints, decimal width, decimal height)
+    public void CalculateAllTrips(BorderPointCollection borderWalkingPoints,
+        decimal width, decimal height, Bitmap image, int filterS1, int filterS2)
     {
-        long maxCount = borderWalkingPoints.BorderWalkingPoints.Keys.Count 
+        long maxCount = borderWalkingPoints.BorderWalkingPoints.Keys.Count
             * borderWalkingPoints.BorderWalkingPoints.Keys.Count;
         long count = 0;
-        foreach (var sStart in borderWalkingPoints.BorderWalkingPoints.Keys)
+        foreach (var sStart in borderWalkingPoints.BorderWalkingPoints.Keys.Where(m=>m == filterS1))
         {
             var fromStartDestinations = new Dictionary<int, SeaTrip>();
             SeaTrips.Add(sStart, fromStartDestinations);
 
-            foreach (var sEnd in borderWalkingPoints.BorderWalkingPoints.Keys)
+            foreach (var sEnd in borderWalkingPoints.BorderWalkingPoints.Keys.Where(m => m == filterS2))
             {
-                if(sStart == sEnd) { continue; }
+                if (sStart == sEnd) { continue; }
 
-                var seaTrip = CalculateSingleTrip(sStart, sEnd, borderWalkingPoints, width, height);
+                var seaTrip = CalculateSingleTrip(sStart, sEnd, borderWalkingPoints, width, height, image);
                 fromStartDestinations.Add(sEnd, seaTrip);
                 count++;
             }
         }
     }
 
-    private SeaTrip CalculateSingleTrip(int sStart, int sEnd, BorderPointCollection borderWalkingPoints, 
-        decimal width, decimal height)
+    private SeaTrip CalculateSingleTrip(int sStart, int sEnd, BorderPointCollection borderWalkingPoints,
+        decimal width, decimal height, Bitmap image)
     {
-        var pStart = borderWalkingPoints.BorderWalkingPoints[sStart];
-        var pEnd = borderWalkingPoints.BorderWalkingPoints[sEnd];
+        var pStartOnEarth = borderWalkingPoints.BorderWalkingPoints[sStart];
+        var pEndOnEarth = borderWalkingPoints.BorderWalkingPoints[sEnd];
         int sLine = 1;
-        var line = MapUtils.GetLine(pStart.Point, pEnd.Point, width, height, 0, ref sLine);
+        var line = MapUtils.GetLine(pStartOnEarth.Point, pEndOnEarth.Point, width, height, 0, ref sLine);
 
-        BorderWalkingPoint pPlus1Line = line.GetClosest(pStart);
-        BorderWalkingPoint pMinus1Line = line.GetClosest(pStart);
-        BorderWalkingPoint pEndLine = line.GetClosest(pEnd);
-        var foundPoints = new List<BorderWalkingPoint>();
-        var pointsListPlus1 = new List<BorderWalkingPoint>();
-        var pointsListMinus1 = new List<BorderWalkingPoint>();
+        //back and forth : d'un côté à l'autre
+        BorderWalkingPoint pForthOnLine = line.GetClosest(pStartOnEarth);
+        BorderWalkingPoint pForthOnEarthWay1 = pStartOnEarth;
+        BorderWalkingPoint pForthOnEarthWay2 = pStartOnEarth;
+        BorderWalkingPoint pBackOnLine = line.GetClosest(pStartOnEarth);
+        BorderWalkingPoint pBackOnEarthWay1 = pStartOnEarth;
+        BorderWalkingPoint pBackOnEarthWay2 = pStartOnEarth;
+        bool pForthOnIsOnLine = true;
+        bool pBackOnIsOnLine = true;
+        var listFound = new List<BorderWalkingPoint>();
+        var listForthOnLine = new List<BorderWalkingPoint>();
+        var listForthOnEarthWay1 = new List<BorderWalkingPoint>();
+        var listForthOnEarthWay2 = new List<BorderWalkingPoint>();
+        var listBackOnLine = new List<BorderWalkingPoint>();
+        var listBackOnEarthWay1 = new List<BorderWalkingPoint>();
+        var listBackOnEarthWay2 = new List<BorderWalkingPoint>();
 
         bool found = false;
-        int count = 0;
         while (!found)
         {
-            pPlus1Line = line.BorderWalkingPoints[pPlus1Line.SPlus1];
-            pointsListPlus1.Add(pPlus1Line);
-            pMinus1Line = line.BorderWalkingPoints[pMinus1Line.SMinus1];
-            pointsListMinus1.Add(pMinus1Line);
+            //on memorise les points courants (y compris le premier)
+            listForthOnLine.Add(pForthOnLine);
+            listForthOnEarthWay1.Add(pForthOnEarthWay1);
+            listForthOnEarthWay2.Add(pForthOnEarthWay2);
+            listBackOnLine.Add(pBackOnLine);
+            listBackOnEarthWay1.Add(pBackOnEarthWay1);
+            listBackOnEarthWay2.Add(pBackOnEarthWay2);
 
-            if (pPlus1Line.S == pEndLine.S)
+            //on avance
+            if (pForthOnIsOnLine)
             {
-                foundPoints = pointsListPlus1;
-                found = true;
+                pForthOnLine = line.BorderWalkingPoints[pForthOnLine.SPlus1];
             }
-            if (pMinus1Line.S == pEndLine.S)
+            else
             {
-                foundPoints = pointsListMinus1;
-                found = true;
+                pForthOnEarthWay1 = borderWalkingPoints.BorderWalkingPoints[pForthOnEarthWay1.SPlus1];
+                pForthOnEarthWay2 = borderWalkingPoints.BorderWalkingPoints[pForthOnEarthWay2.SMinus1];
             }
-            count++;
-            if(count> line.BorderWalkingPoints.Count + 20)
+            if (pBackOnIsOnLine)
             {
+                pBackOnLine = line.BorderWalkingPoints[pBackOnLine.SMinus1];
+            }
+            else
+            {
+                pBackOnEarthWay1 = borderWalkingPoints.BorderWalkingPoints[pBackOnEarthWay1.SPlus1];
+                pBackOnEarthWay2 = borderWalkingPoints.BorderWalkingPoints[pBackOnEarthWay2.SMinus1];
+            }
 
+            //apres un pas en avant on repere où on est
+            if (pForthOnIsOnLine)
+            {
+                if (!IsPointInSea(pForthOnLine, image))
+                {
+                    pForthOnIsOnLine = false;
+                    pForthOnEarthWay1 = borderWalkingPoints.GetClosest(pForthOnLine);
+                    pForthOnEarthWay2 = borderWalkingPoints.GetClosest(pForthOnLine);
+                    listFound.AddRange(listForthOnLine);
+                    listForthOnEarthWay1 = new List<BorderWalkingPoint>();
+                    listForthOnEarthWay2 = new List<BorderWalkingPoint>();
+                }
             }
+            else
+            {
+                if (IsPointOnLine(pForthOnEarthWay1, line))
+                {
+                    pForthOnIsOnLine = true;
+                    pForthOnLine = line.GetClosest(pForthOnEarthWay1);
+                    listFound.AddRange(listForthOnEarthWay1);
+                    listForthOnLine = new List<BorderWalkingPoint>();
+                }
+                else if (IsPointOnLine(pForthOnEarthWay2, line))
+                {
+                    pForthOnIsOnLine = true;
+                    pForthOnLine = line.GetClosest(pForthOnEarthWay2);
+                    listFound.AddRange(listForthOnEarthWay2);
+                    listForthOnLine = new List<BorderWalkingPoint>();
+                }
+            }
+            if (pBackOnIsOnLine)
+            {
+                if (!IsPointInSea(pBackOnLine, image))
+                {
+                    pBackOnIsOnLine = false;
+                    pBackOnEarthWay1 = borderWalkingPoints.GetClosest(pBackOnLine);
+                    pBackOnEarthWay2 = borderWalkingPoints.GetClosest(pBackOnLine);
+                    listFound.AddRange(listBackOnLine);
+                    listBackOnEarthWay1 = new List<BorderWalkingPoint>();
+                    listBackOnEarthWay2 = new List<BorderWalkingPoint>();
+                }
+            }
+            else
+            {
+                if (IsPointOnLine(pBackOnEarthWay1, line))
+                {
+                    pBackOnIsOnLine = true;
+                    pBackOnLine = line.GetClosest(pBackOnEarthWay1);
+                    listFound.AddRange(listBackOnEarthWay1);
+                    listBackOnLine = new List<BorderWalkingPoint>();
+                }
+                else if (IsPointOnLine(pBackOnEarthWay2, line))
+                {
+                    pBackOnIsOnLine = true;
+                    pBackOnLine = line.GetClosest(pBackOnEarthWay2);
+                    listFound.AddRange(listBackOnEarthWay2);
+                    listBackOnLine = new List<BorderWalkingPoint>();
+                }
+            }
+
+            //trouvé ? -> fin
+            if (pForthOnIsOnLine)
+            {
+                if (borderWalkingPoints.GetClosest(pForthOnLine).Equals(pEndOnEarth))
+                {
+                    found = true;
+                    listFound.AddRange(listForthOnLine);
+                }
+            }
+            else
+            {
+                if (pForthOnEarthWay1.Equals(pEndOnEarth))
+                {
+                    found = true;
+                    listFound.AddRange(listForthOnEarthWay1);
+                }
+                else if (pForthOnEarthWay2.Equals(pEndOnEarth))
+                {
+                    found = true;
+                    listFound.AddRange(listForthOnEarthWay2);
+                }
+            }
+            if (pBackOnIsOnLine)
+            {
+                if (borderWalkingPoints.GetClosest(pBackOnLine).Equals(pEndOnEarth))
+                {
+                    found = true;
+                    listFound.AddRange(listBackOnLine);
+                }
+            }
+            else
+            {
+                if (pBackOnEarthWay1.Equals(pEndOnEarth))
+                {
+                    found =true;
+                    listFound.AddRange(listBackOnEarthWay1);
+                }
+                else if(pBackOnEarthWay2.Equals(pEndOnEarth))
+                {
+                    found=true;
+                    listFound.AddRange(listBackOnEarthWay2);
+                }
+            }
+
         }
-
-        var seaTrip = new SeaTrip(pStart, pEnd, foundPoints);
+        var seaTrip = new SeaTrip(pStartOnEarth, pEndOnEarth, listFound);
         return seaTrip;
     }
+
+    private bool IsPointInSea(BorderWalkingPoint point, Bitmap image)
+    {
+        return image.GetPixel(point.X, point.Y).ToArgb() == BorderWalkingPointExtractor.SeaColor.ToArgb();
+    }
+    private bool IsPointOnLine(BorderWalkingPoint point, BorderPointCollection line)
+    {
+        return line.GetPoints().Any(p => MapUtils.GetDistance(point.Point, p.Point) <= NbPixelsPointsEqual);
+    }
+
 }

@@ -28,6 +28,7 @@ string imageFilePath = Path.Combine(Environment.CurrentDirectory, "image.png");
 string outputMapPath = Path.Combine(Environment.CurrentDirectory, "map.png");
 string workMapPath = Path.Combine(Environment.CurrentDirectory, "map_step1.png");
 string workMapPath2 = Path.Combine(Environment.CurrentDirectory, "map_step2.png");
+string workMapPath3 = Path.Combine(Environment.CurrentDirectory, "map_step3.png");
 
 var borderPointsCollection = new BorderPointCollection();
 var borderExtractor = new BorderWalkingPointExtractor(new List<IMapPointHandler>() { borderPointsCollection });
@@ -108,14 +109,16 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
 
     //File.Copy(workMapPath, workMapPath2, true);
 
-    //Console.WriteLine("Veuillez ouvrir avec paint l'image suivante et remplir les continents avec une couleur");
-    //Console.WriteLine($"Fichier : {workMapPath2}");
-    //Console.ReadLine();
+    Console.WriteLine("Veuillez ouvrir avec paint l'image suivante et remplir les continents avec une couleur");
+    Console.WriteLine($"Fichier : {workMapPath2}");
+    Console.ReadLine();
 
     var tripGenerator = new TripGenerator();
-    tripGenerator.CalculateAllTrips(borderPointsCollection, width, height);
-
-
+    var s1 = borderPointsCollection.GetPoints().FirstOrDefault(m => m.X == 31 && m.Y == 208);
+    var s2 = borderPointsCollection.GetPoints().FirstOrDefault(m => m.X == 189 && m.Y == 304);
+    tripGenerator.CalculateAllTrips(borderPointsCollection, width, height, new Bitmap(Image.FromFile(workMapPath2)), s1.S, s2.S);
+    var trip = tripGenerator.SeaTrips[s1.S][s2.S];
+    trip.DrawTrip(imageWork, workMapPath3);
 }
 
 Console.WriteLine("ended");

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ExtractPixels.MapProcessing.Model;
 
-public class BorderWalkingPoint
+public class BorderWalkingPoint : IEquatable<BorderWalkingPoint>
 {
     /// <summary>
     /// variable indicating progress when walking along the continents
@@ -31,5 +31,11 @@ public class BorderWalkingPoint
         X = x;
         Y = y;
         ContinentNumber = continentNumber;
+    }
+
+
+    public bool Equals(BorderWalkingPoint? other)
+    {
+        return other.S == S;
     }
 }
