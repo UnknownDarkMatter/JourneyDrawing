@@ -14,6 +14,12 @@ public class BorderPointCollection : IMapPointHandler
      /// </summary>
     private Dictionary<int, BorderWalkingPoint> _borderWalkingPoints;
 
+    public Dictionary<int, BorderWalkingPoint> BorderWalkingPoints
+    {
+        get { return _borderWalkingPoints; }
+    }
+
+
     /// <summary>
     /// [X, [Y, BorderWalkingPoint]]
     /// </summary>
@@ -96,5 +102,41 @@ public class BorderPointCollection : IMapPointHandler
     public IEnumerable<BorderWalkingPoint> GetPoints()
     {
         return _borderWalkingPoints.Values;
+    }
+
+    public BorderWalkingPoint GetClosest(int x, int y)
+    {
+        var targetPoint = new MapPoint(x, y);
+        var closest = _borderWalkingPoints.Values.FirstOrDefault(p => p.X == x && p.Y == y);
+        if(closest == null)
+        {
+            decimal minDistance = decimal.MaxValue;
+            foreach(var point in _borderWalkingPoints.Values)
+            {
+                var distance = MapUtils.GetDistance(targetPoint, new MapPoint(point.X, point.Y));
+                if(distance < minDistance)
+                {
+                    minDistance = distance;
+                    closest = point;
+                }
+            }
+        }
+        return closest;
+    }
+
+    public BorderWalkingPoint GetClosest(BorderWalkingPoint point)
+    {
+        return GetClosest(point.X, point.Y);
+    }
+
+    public void Dump(string debugDumpPath)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("Continent;S;SPlus1;SMinus1");
+        foreach (var p in _borderWalkingPoints.Values)
+        {
+            sb.AppendLine($"{p.ContinentNumber};{p.S};{p.SPlus1};{p.SMinus1}");
+        }
+        File.WriteAllText(debugDumpPath, sb.ToString());
     }
 }

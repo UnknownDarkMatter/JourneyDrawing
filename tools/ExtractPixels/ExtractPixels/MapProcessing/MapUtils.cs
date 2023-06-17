@@ -10,6 +10,8 @@ namespace ExtractPixels.MapProcessing;
 
 public static class MapUtils
 {
+
+
     /// <summary>
     /// génère une ligne qui traverse toute la carte et où le dernier point est lié au premier et inversement
     /// </summary>
@@ -18,6 +20,26 @@ public static class MapUtils
         int continentNumber, ref int s)
     {
         var collection = new BorderPointCollection();
+
+        if(p1.X == p2.X)
+        {
+            for (decimal yTmp = 0; yTmp < height - 1; yTmp++)
+            {
+                collection.AddMapPoint(new MapPoint((int)p1.X, (int)yTmp), continentNumber, ref s);
+            }
+            collection.LinkFirstAndLastOfContinent(null);
+            return collection;
+        }
+
+        if (p1.Y == p2.Y)
+        {
+            for (decimal xTmp2 = 0; xTmp2 < width - 1; xTmp2++)
+            {
+                collection.AddMapPoint(new MapPoint((int)xTmp2, (int)p1.Y), continentNumber, ref s);
+            }
+            collection.LinkFirstAndLastOfContinent(null);
+            return collection;
+        }
 
         //if (p1.X > p2.X)
         //{
@@ -115,8 +137,26 @@ public static class MapUtils
         return collection;
     }
 
+    public static decimal GetDistance(MapPoint p1, MapPoint p2)
+    {
+        var x = Math.Pow((double)p2.X - (double)p1.X, (double)2);
+        var y = Math.Pow((double)p2.Y - (double)p1.Y, (double)2);
+        return (decimal)Math.Sqrt(x + y);
+    }
+
     public static void DrawLine(MapPoint p1, MapPoint p2, int width, int height, string imageFilePath)
     {
+
+        //MapUtils.DrawLine(new MapPoint(26, 219), new MapPoint(189, 304), width, height, imageFilePath);//pente negative, inversion y en biais
+        //MapUtils.DrawLine(new MapPoint(77, 94), new MapPoint(80, 333), width, height, imageFilePath);//pente negative vertical
+        //MapUtils.DrawLine(new MapPoint(124, 285), new MapPoint(212, 281), width, height, imageFilePath);//pente negative horizontal
+        //MapUtils.DrawLine(new MapPoint(43, 330), new MapPoint(118, 232), width, height, imageFilePath);//pente positive, inversion y en biais
+        //MapUtils.DrawLine(new MapPoint(98, 340), new MapPoint(103, 264), width, height, imageFilePath);//pente positive vertical
+        //MapUtils.DrawLine(new MapPoint(254, 459), new MapPoint(350, 450), width, height, imageFilePath);//pente positive horizontal
+        //MapUtils.DrawLine(new MapPoint(141, 778), new MapPoint(290, 710), width, height, imageFilePath);//pente positive diagonale
+        //MapUtils.DrawLine(new MapPoint(151, 70), new MapPoint(300, 137), width, height, imageFilePath);//pente negative diagonale
+        //MapUtils.DrawLine(new MapPoint(151, 70), new MapPoint(300, 120), width, height, imageFilePath);//pente negative diagonale
+
         int s = 1;
         var line = GetLine(p1, p2, width, height, 1, ref s);
         Bitmap outputMap;

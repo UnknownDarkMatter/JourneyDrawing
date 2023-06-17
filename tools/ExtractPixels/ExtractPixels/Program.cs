@@ -53,7 +53,7 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
         }
     }
 
-    var prod = true;
+    var prod = false;
     if (prod)
     {
         borderExtractor.ExtractBorder(1847, 75, i++, ref s, imageSource, imageWork, workMapPath, imageOutput, outputMapPath);//continent eurasien
@@ -106,22 +106,16 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
     borderPointsCollection.LinkFirstAndLastOfContinent(null);
 
 
-    File.Copy(workMapPath, workMapPath2, true);
+    //File.Copy(workMapPath, workMapPath2, true);
 
-    Console.WriteLine("Veuillez ouvrir avec paint l'image suivante et remplir les continents avec une couleur");
-    Console.WriteLine($"Fichier : {workMapPath2}");
-    Console.WriteLine("(  La couleur des bordures est RGB(119, 255, 118)  )");
-    Console.ReadLine();
+    //Console.WriteLine("Veuillez ouvrir avec paint l'image suivante et remplir les continents avec une couleur");
+    //Console.WriteLine($"Fichier : {workMapPath2}");
+    //Console.ReadLine();
 
-    //MapUtils.DrawLine(new MapPoint(26, 219), new MapPoint(189, 304), width, height, imageFilePath);//pente negative, inversion y en biais
-    //MapUtils.DrawLine(new MapPoint(77, 94), new MapPoint(80, 333), width, height, imageFilePath);//pente negative vertical
-    //MapUtils.DrawLine(new MapPoint(124, 285), new MapPoint(212, 281), width, height, imageFilePath);//pente negative horizontal
-    //MapUtils.DrawLine(new MapPoint(43, 330), new MapPoint(118, 232), width, height, imageFilePath);//pente positive, inversion y en biais
-    //MapUtils.DrawLine(new MapPoint(98, 340), new MapPoint(103, 264), width, height, imageFilePath);//pente positive vertical
-    //MapUtils.DrawLine(new MapPoint(254, 459), new MapPoint(350, 450), width, height, imageFilePath);//pente positive horizontal
-    //MapUtils.DrawLine(new MapPoint(141, 778), new MapPoint(290, 710), width, height, imageFilePath);//pente positive diagonale
-    //MapUtils.DrawLine(new MapPoint(151, 70), new MapPoint(300, 137), width, height, imageFilePath);//pente negative diagonale
-    //MapUtils.DrawLine(new MapPoint(151, 70), new MapPoint(300, 120), width, height, imageFilePath);//pente negative diagonale
+    var tripGenerator = new TripGenerator();
+    tripGenerator.CalculateAllTrips(borderPointsCollection, width, height);
+
+
 }
 
 Console.WriteLine("ended");
