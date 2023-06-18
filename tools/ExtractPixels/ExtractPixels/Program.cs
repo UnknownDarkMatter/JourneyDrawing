@@ -107,7 +107,7 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
     borderPointsCollection.LinkFirstAndLastOfContinent(null);
 
 
-    //File.Copy(workMapPath, workMapPath2, true);
+    File.Copy(workMapPath, workMapPath2, true);
 
     Console.WriteLine("Veuillez ouvrir avec paint l'image suivante et remplir les continents avec une couleur");
     Console.WriteLine($"Fichier : {workMapPath2}");

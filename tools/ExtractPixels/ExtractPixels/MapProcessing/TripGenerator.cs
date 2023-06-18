@@ -61,7 +61,8 @@ public class TripGenerator
         BorderWalkingPoint pBackOnEarthWay2 = pStartOnEarth;
         bool pForthOnIsOnLine = true;
         bool pBackOnIsOnLine = true;
-        var listFound = new List<BorderWalkingPoint>();
+        var listFoundForth = new List<BorderWalkingPoint>();
+        var listFoundBack = new List<BorderWalkingPoint>();
         var listForthOnLine = new List<BorderWalkingPoint>();
         var listForthOnEarthWay1 = new List<BorderWalkingPoint>();
         var listForthOnEarthWay2 = new List<BorderWalkingPoint>();
@@ -69,8 +70,9 @@ public class TripGenerator
         var listBackOnEarthWay1 = new List<BorderWalkingPoint>();
         var listBackOnEarthWay2 = new List<BorderWalkingPoint>();
 
-        bool found = false;
-        while (!found)
+        bool foundForth = false;
+        bool foundBack = false;
+        while (!foundForth && !foundBack)
         {
             //on memorise les points courants (y compris le premier)
             listForthOnLine.Add(pForthOnLine);
@@ -108,7 +110,7 @@ public class TripGenerator
                     pForthOnIsOnLine = false;
                     pForthOnEarthWay1 = borderWalkingPoints.GetClosest(pForthOnLine);
                     pForthOnEarthWay2 = borderWalkingPoints.GetClosest(pForthOnLine);
-                    listFound.AddRange(listForthOnLine);
+                    listFoundForth.AddRange(listForthOnLine);
                     listForthOnEarthWay1 = new List<BorderWalkingPoint>();
                     listForthOnEarthWay2 = new List<BorderWalkingPoint>();
                 }
@@ -118,15 +120,15 @@ public class TripGenerator
                 if (IsPointOnLine(pForthOnEarthWay1, line))
                 {
                     pForthOnIsOnLine = true;
-                    pForthOnLine = line.GetClosest(pForthOnEarthWay1);
-                    listFound.AddRange(listForthOnEarthWay1);
+
+                    listFoundForth.AddRange(listForthOnEarthWay1);
                     listForthOnLine = new List<BorderWalkingPoint>();
                 }
                 else if (IsPointOnLine(pForthOnEarthWay2, line))
                 {
                     pForthOnIsOnLine = true;
-                    pForthOnLine = line.GetClosest(pForthOnEarthWay2);
-                    listFound.AddRange(listForthOnEarthWay2);
+
+                    listFoundForth.AddRange(listForthOnEarthWay2);
                     listForthOnLine = new List<BorderWalkingPoint>();
                 }
             }
@@ -137,7 +139,7 @@ public class TripGenerator
                     pBackOnIsOnLine = false;
                     pBackOnEarthWay1 = borderWalkingPoints.GetClosest(pBackOnLine);
                     pBackOnEarthWay2 = borderWalkingPoints.GetClosest(pBackOnLine);
-                    listFound.AddRange(listBackOnLine);
+                    listFoundBack.AddRange(listBackOnLine);
                     listBackOnEarthWay1 = new List<BorderWalkingPoint>();
                     listBackOnEarthWay2 = new List<BorderWalkingPoint>();
                 }
@@ -147,15 +149,15 @@ public class TripGenerator
                 if (IsPointOnLine(pBackOnEarthWay1, line))
                 {
                     pBackOnIsOnLine = true;
-                    pBackOnLine = line.GetClosest(pBackOnEarthWay1);
-                    listFound.AddRange(listBackOnEarthWay1);
+
+                    listFoundBack.AddRange(listBackOnEarthWay1);
                     listBackOnLine = new List<BorderWalkingPoint>();
                 }
                 else if (IsPointOnLine(pBackOnEarthWay2, line))
                 {
                     pBackOnIsOnLine = true;
-                    pBackOnLine = line.GetClosest(pBackOnEarthWay2);
-                    listFound.AddRange(listBackOnEarthWay2);
+
+                    listFoundBack.AddRange(listBackOnEarthWay2);
                     listBackOnLine = new List<BorderWalkingPoint>();
                 }
             }
@@ -165,46 +167,47 @@ public class TripGenerator
             {
                 if (borderWalkingPoints.GetClosest(pForthOnLine).Equals(pEndOnEarth))
                 {
-                    found = true;
-                    listFound.AddRange(listForthOnLine);
+                    foundForth = true;
+                    listFoundForth.AddRange(listForthOnLine);
                 }
             }
             else
             {
                 if (pForthOnEarthWay1.Equals(pEndOnEarth))
                 {
-                    found = true;
-                    listFound.AddRange(listForthOnEarthWay1);
+                    foundForth = true;
+                    listFoundForth.AddRange(listForthOnEarthWay1);
                 }
                 else if (pForthOnEarthWay2.Equals(pEndOnEarth))
                 {
-                    found = true;
-                    listFound.AddRange(listForthOnEarthWay2);
+                    foundForth = true;
+                    listFoundForth.AddRange(listForthOnEarthWay2);
                 }
             }
             if (pBackOnIsOnLine)
             {
                 if (borderWalkingPoints.GetClosest(pBackOnLine).Equals(pEndOnEarth))
                 {
-                    found = true;
-                    listFound.AddRange(listBackOnLine);
+                    foundBack = true;
+                    listFoundBack.AddRange(listBackOnLine);
                 }
             }
             else
             {
                 if (pBackOnEarthWay1.Equals(pEndOnEarth))
                 {
-                    found =true;
-                    listFound.AddRange(listBackOnEarthWay1);
+                    foundBack = true;
+                    listFoundBack.AddRange(listBackOnEarthWay1);
                 }
                 else if(pBackOnEarthWay2.Equals(pEndOnEarth))
                 {
-                    found=true;
-                    listFound.AddRange(listBackOnEarthWay2);
+                    foundBack = true;
+                    listFoundBack.AddRange(listBackOnEarthWay2);
                 }
             }
 
         }
+        var listFound = foundForth ? listFoundForth : listFoundBack;
         var seaTrip = new SeaTrip(pStartOnEarth, pEndOnEarth, listFound);
         return seaTrip;
     }
