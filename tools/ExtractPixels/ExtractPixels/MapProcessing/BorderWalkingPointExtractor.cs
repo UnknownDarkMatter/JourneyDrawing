@@ -128,7 +128,7 @@ public class BorderWalkingPointExtractor
         return nextBorderPoints;
     }
 
-    private IEnumerable<MapPoint> GetNeighbourPixels(MapPoint p, Bitmap image)
+    public static IEnumerable<MapPoint> GetNeighbourPixels(MapPoint p, Bitmap image)
     {
         var result = new List<MapPoint>();
 

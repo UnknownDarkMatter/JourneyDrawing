@@ -10,7 +10,7 @@ namespace ExtractPixels.MapProcessing;
 
 public class TripGenerator
 {
-    public const int NbPixelsPointsEqual = 2;
+    public const int NbPixelsPointsEqual = 4;
 
     /// <summary>
     /// [S sart, S end, SeaTrip]
@@ -121,7 +121,7 @@ public class TripGenerator
             //apres un pas en avant on repere où on est
             if (pForthOnIsOnLine)
             {
-                if (!IsPointInSea(pForthOnLine, image))
+                if (!IsPointOnLine(pForthOnLine, line, listFoundForth, image))
                 {
                     pForthOnIsOnLine = false;
                     pForthOnEarthWay1 = borderWalkingPoints.GetClosest(pForthOnLine);
@@ -134,14 +134,14 @@ public class TripGenerator
             }
             else
             {
-                if (IsPointOnLine(pForthOnEarthWay1, line, listFoundForth))
+                if (IsPointOnLine(pForthOnEarthWay1, line, listFoundForth, image))
                 {
                     pForthOnIsOnLine = true;
 
                     listFoundForth.AddRange(listForthOnEarthWay1);
                     listForthOnLine = new List<BorderWalkingPoint>();
                 }
-                else if (IsPointOnLine(pForthOnEarthWay2, line, listFoundForth))
+                else if (IsPointOnLine(pForthOnEarthWay2, line, listFoundForth, image))
                 {
                     pForthOnIsOnLine = true;
 
@@ -151,7 +151,7 @@ public class TripGenerator
             }
             if (pBackOnIsOnLine)
             {
-                if (!IsPointInSea(pBackOnLine, image))
+                if (!IsPointOnLine(pBackOnLine, line, listFoundBack, image))
                 {
                     pBackOnIsOnLine = false;
                     pBackOnEarthWay1 = borderWalkingPoints.GetClosest(pBackOnLine);
@@ -163,14 +163,14 @@ public class TripGenerator
             }
             else
             {
-                if (IsPointOnLine(pBackOnEarthWay1, line, listFoundBack))
+                if (IsPointOnLine(pBackOnEarthWay1, line, listFoundBack, image))
                 {
                     pBackOnIsOnLine = true;
 
                     listFoundBack.AddRange(listBackOnEarthWay1);
                     listBackOnLine = new List<BorderWalkingPoint>();
                 }
-                else if (IsPointOnLine(pBackOnEarthWay2, line, listFoundBack))
+                else if (IsPointOnLine(pBackOnEarthWay2, line, listFoundBack, image))
                 {
                     pBackOnIsOnLine = true;
 
@@ -229,12 +229,20 @@ public class TripGenerator
         return seaTrip;
     }
 
+    private bool IsPointOnEarth(BorderWalkingPoint point, Bitmap image)
+    {
+        var isPointInSea = IsPointInSea(point, image);
+        //var isBorderPoint = IsBorderPoint(point, image);
+        return !isPointInSea;
+    }
+
     private bool IsPointInSea(BorderWalkingPoint point, Bitmap image)
     {
         return image.GetPixel(point.X, point.Y).ToArgb() == BorderWalkingPointExtractor.SeaColor.ToArgb();
     }
+
     private bool IsPointOnLine(BorderWalkingPoint point, BorderPointCollection line,
-        IEnumerable<BorderWalkingPoint> foundPoints)
+        IEnumerable<BorderWalkingPoint> foundPoints, Bitmap image)
     {
         //if (foundPoints
         //    .Any(m => m.Equals(point)
@@ -242,7 +250,47 @@ public class TripGenerator
         //{
         //    return false;
         //}
+        if(IsPointOnEarth(point, image)){
+            return false;
+        }
         return line.GetPoints().Any(p => MapUtils.GetDistance(point.Point, p.Point) <= NbPixelsPointsEqual);
+    }
+
+
+    private bool IsBorderPoint(BorderWalkingPoint pCurrent, Bitmap imageSource)
+    {
+        var pointNeighbours = GetNeighbourPixels(pCurrent.Point, imageSource);
+        var currentIsCloseToSea = pointNeighbours
+            .Any(p => imageSource.GetPixel(p.X, p.Y).ToArgb() == BorderWalkingPointExtractor.SeaColor.ToArgb());
+
+        return currentIsCloseToSea;
+    }
+
+
+    private IEnumerable<MapPoint> GetNeighbourPixels(MapPoint p, Bitmap image)
+    {
+        var result = new List<MapPoint>();
+
+        //cross pixels
+        result.Add(new MapPoint(p.X - 1, p.Y + 1));
+        result.Add(new MapPoint(p.X - 1, p.Y - 1));
+        result.Add(new MapPoint(p.X + 1, p.Y + 1));
+        result.Add(new MapPoint(p.X + 1, p.Y - 1));
+
+        //aside pixels
+        result.Add(new MapPoint(p.X, p.Y + 1));
+        result.Add(new MapPoint(p.X, p.Y - 1));
+        result.Add(new MapPoint(p.X + 1, p.Y));
+        result.Add(new MapPoint(p.X - 1, p.Y));
+
+        result = result.Where((point) =>
+            point.X < image.Width
+            && point.X >= 0
+            && point.Y < image.Height
+            && point.Y >= 0
+        ).ToList();
+
+        return result;
     }
 
 }
