@@ -144,6 +144,23 @@ public static class MapUtils
         return (decimal)Math.Sqrt(x + y);
     }
 
+    public static Bitmap Clone(Bitmap image)
+    {
+        int width = image.Width;
+        int height = image.Height;
+
+        var imageWork = image.Clone() as Bitmap;
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                imageWork.SetPixel(x, y, image.GetPixel(x, y));
+            }
+        }
+        return imageWork;
+    }
+
     public static void DrawLine(MapPoint p1, MapPoint p2, int width, int height, string imageFilePath)
     {
 

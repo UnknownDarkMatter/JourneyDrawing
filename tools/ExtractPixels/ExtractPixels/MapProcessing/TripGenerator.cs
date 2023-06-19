@@ -23,7 +23,7 @@ public class TripGenerator
     }
 
     public void CalculateAllTrips(BorderPointCollection borderWalkingPoints,
-        decimal width, decimal height, Bitmap image, int filterS1, int filterS2)
+        decimal width, decimal height, string imageFilePath, Bitmap image, int filterS1, int filterS2)
     {
         long maxCount = borderWalkingPoints.BorderWalkingPoints.Keys.Count
             * borderWalkingPoints.BorderWalkingPoints.Keys.Count;
@@ -37,7 +37,7 @@ public class TripGenerator
             {
                 if (sStart == sEnd) { continue; }
 
-                var seaTrip = CalculateSingleTrip(sStart, sEnd, borderWalkingPoints, width, height, image);
+                var seaTrip = CalculateSingleTrip(sStart, sEnd, borderWalkingPoints, width, height, imageFilePath, image);
                 fromStartDestinations.Add(sEnd, seaTrip);
                 count++;
             }
@@ -45,12 +45,14 @@ public class TripGenerator
     }
 
     private SeaTrip CalculateSingleTrip(int sStart, int sEnd, BorderPointCollection borderWalkingPoints,
-        decimal width, decimal height, Bitmap image)
+        decimal width, decimal height, string imageFilePath, Bitmap image)
     {
         var pStartOnEarth = borderWalkingPoints.BorderWalkingPoints[sStart];
         var pEndOnEarth = borderWalkingPoints.BorderWalkingPoints[sEnd];
         int sLine = 1;
         var line = MapUtils.GetLine(pStartOnEarth.Point, pEndOnEarth.Point, width, height, 0, ref sLine);
+        string debugImagePath = imageFilePath + "_debug.png";
+        var imageDebug = MapUtils.Clone(image);
 
         //back and forth : d'un côté à l'autre
         BorderWalkingPoint pForthOnLine = line.GetClosest(pStartOnEarth);
@@ -85,19 +87,33 @@ public class TripGenerator
             //on avance
             if (pForthOnIsOnLine)
             {
+                imageDebug.SetPixel(pForthOnLine.X, pForthOnLine.Y, Color.Pink);
+                imageDebug.Save(debugImagePath);
+
                 pForthOnLine = line.BorderWalkingPoints[pForthOnLine.SPlus1];
             }
             else
             {
+                imageDebug.SetPixel(pForthOnEarthWay1.X, pForthOnEarthWay1.Y, Color.Red);
+                imageDebug.SetPixel(pForthOnEarthWay2.X, pForthOnEarthWay2.Y, Color.Green);
+                imageDebug.Save(debugImagePath);
+
                 pForthOnEarthWay1 = borderWalkingPoints.BorderWalkingPoints[pForthOnEarthWay1.SPlus1];
                 pForthOnEarthWay2 = borderWalkingPoints.BorderWalkingPoints[pForthOnEarthWay2.SMinus1];
             }
             if (pBackOnIsOnLine)
             {
+                imageDebug.SetPixel(pForthOnLine.X, pForthOnLine.Y, Color.Violet);
+                imageDebug.Save(debugImagePath);
+
                 pBackOnLine = line.BorderWalkingPoints[pBackOnLine.SMinus1];
             }
             else
             {
+                imageDebug.SetPixel(pForthOnEarthWay1.X, pForthOnEarthWay1.Y, Color.Red);
+                imageDebug.SetPixel(pForthOnEarthWay2.X, pForthOnEarthWay2.Y, Color.Green);
+                imageDebug.Save(debugImagePath);
+
                 pBackOnEarthWay1 = borderWalkingPoints.BorderWalkingPoints[pBackOnEarthWay1.SPlus1];
                 pBackOnEarthWay2 = borderWalkingPoints.BorderWalkingPoints[pBackOnEarthWay2.SMinus1];
             }
@@ -113,18 +129,19 @@ public class TripGenerator
                     listFoundForth.AddRange(listForthOnLine);
                     listForthOnEarthWay1 = new List<BorderWalkingPoint>();
                     listForthOnEarthWay2 = new List<BorderWalkingPoint>();
+
                 }
             }
             else
             {
-                if (IsPointOnLine(pForthOnEarthWay1, line))
+                if (IsPointOnLine(pForthOnEarthWay1, line, listFoundForth))
                 {
                     pForthOnIsOnLine = true;
 
                     listFoundForth.AddRange(listForthOnEarthWay1);
                     listForthOnLine = new List<BorderWalkingPoint>();
                 }
-                else if (IsPointOnLine(pForthOnEarthWay2, line))
+                else if (IsPointOnLine(pForthOnEarthWay2, line, listFoundForth))
                 {
                     pForthOnIsOnLine = true;
 
@@ -146,14 +163,14 @@ public class TripGenerator
             }
             else
             {
-                if (IsPointOnLine(pBackOnEarthWay1, line))
+                if (IsPointOnLine(pBackOnEarthWay1, line, listFoundBack))
                 {
                     pBackOnIsOnLine = true;
 
                     listFoundBack.AddRange(listBackOnEarthWay1);
                     listBackOnLine = new List<BorderWalkingPoint>();
                 }
-                else if (IsPointOnLine(pBackOnEarthWay2, line))
+                else if (IsPointOnLine(pBackOnEarthWay2, line, listFoundBack))
                 {
                     pBackOnIsOnLine = true;
 
@@ -216,8 +233,15 @@ public class TripGenerator
     {
         return image.GetPixel(point.X, point.Y).ToArgb() == BorderWalkingPointExtractor.SeaColor.ToArgb();
     }
-    private bool IsPointOnLine(BorderWalkingPoint point, BorderPointCollection line)
+    private bool IsPointOnLine(BorderWalkingPoint point, BorderPointCollection line,
+        IEnumerable<BorderWalkingPoint> foundPoints)
     {
+        //if (foundPoints
+        //    .Any(m => m.Equals(point)
+        //        || MapUtils.GetDistance(m.Point, point.Point) <= NbPixelsPointsEqual))
+        //{
+        //    return false;
+        //}
         return line.GetPoints().Any(p => MapUtils.GetDistance(point.Point, p.Point) <= NbPixelsPointsEqual);
     }
 

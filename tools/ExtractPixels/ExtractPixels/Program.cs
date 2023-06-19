@@ -116,7 +116,8 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
     var tripGenerator = new TripGenerator();
     var s1 = borderPointsCollection.GetPoints().FirstOrDefault(m => m.X == 31 && m.Y == 208);
     var s2 = borderPointsCollection.GetPoints().FirstOrDefault(m => m.X == 189 && m.Y == 304);
-    tripGenerator.CalculateAllTrips(borderPointsCollection, width, height, new Bitmap(Image.FromFile(workMapPath2)), s1.S, s2.S);
+    tripGenerator.CalculateAllTrips(borderPointsCollection, width, height, workMapPath2, 
+        new Bitmap(Image.FromFile(workMapPath2)), s1.S, s2.S);
     var trip = tripGenerator.SeaTrips[s1.S][s2.S];
     trip.DrawTrip(imageWork, workMapPath3);
 }
