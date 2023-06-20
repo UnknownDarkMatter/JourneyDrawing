@@ -142,14 +142,14 @@ public class TripGenerator
                 if (IsPointOnLine(pForthOnEarthWay1, line, listFoundForth, image, pForth_CountBeforeTellingItIsALine))
                 {
                     pForthOnIsOnLine = true;
-
+                    pForthOnLine = line.GetClosest(pForthOnEarthWay1);
                     listFoundForth.AddRange(listForthOnEarthWay1);
                     listForthOnLine = new List<BorderWalkingPoint>();
                 }
                 else if (IsPointOnLine(pForthOnEarthWay2, line, listFoundForth, image, pForth_CountBeforeTellingItIsALine))
                 {
                     pForthOnIsOnLine = true;
-
+                    pForthOnLine = line.GetClosest(pForthOnEarthWay2);
                     listFoundForth.AddRange(listForthOnEarthWay2);
                     listForthOnLine = new List<BorderWalkingPoint>();
                 }
@@ -174,14 +174,14 @@ public class TripGenerator
                 if (IsPointOnLine(pBackOnEarthWay1, line, listFoundBack, image, pBack_CountBeforeTellingItIsALine))
                 {
                     pBackOnIsOnLine = true;
-
+                    pBackOnLine = line.GetClosest(pBackOnEarthWay1);
                     listFoundBack.AddRange(listBackOnEarthWay1);
                     listBackOnLine = new List<BorderWalkingPoint>();
                 }
                 else if (IsPointOnLine(pBackOnEarthWay2, line, listFoundBack, image, pBack_CountBeforeTellingItIsALine))
                 {
                     pBackOnIsOnLine = true;
-
+                    pBackOnLine = line.GetClosest(pBackOnEarthWay2);
                     listFoundBack.AddRange(listBackOnEarthWay2);
                     listBackOnLine = new List<BorderWalkingPoint>();
                 }
