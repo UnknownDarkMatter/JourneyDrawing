@@ -11,7 +11,8 @@ namespace ExtractPixels.MapProcessing;
 public class TripGenerator
 {
     public const int NbPixelsPointsEqual = 4;
-    public const int NbPixelsNeighBours = 4;
+    public const int NbPixelsNeighBours = 2;
+    public const int CountBeforeTellingItIsALine = 8;
 
     /// <summary>
     /// [S sart, S end, SeaTrip]
@@ -72,6 +73,8 @@ public class TripGenerator
         var listBackOnLine = new List<BorderWalkingPoint>();
         var listBackOnEarthWay1 = new List<BorderWalkingPoint>();
         var listBackOnEarthWay2 = new List<BorderWalkingPoint>();
+        var pForth_CountBeforeTellingItIsALine = 0;
+        var pBack_CountBeforeTellingItIsALine = 0;
 
         bool foundForth = false;
         bool foundBack = false;
@@ -122,9 +125,10 @@ public class TripGenerator
             //apres un pas en avant on repere où on est
             if (pForthOnIsOnLine)
             {
-                if (!IsPointOnLine(pForthOnLine, line, listFoundForth, image))
+                if (!IsPointOnLine(pForthOnLine, line, listFoundForth, image, pForth_CountBeforeTellingItIsALine))
                 {
                     pForthOnIsOnLine = false;
+                    pForth_CountBeforeTellingItIsALine = CountBeforeTellingItIsALine;
                     pForthOnEarthWay1 = borderWalkingPoints.GetClosest(pForthOnLine);
                     pForthOnEarthWay2 = borderWalkingPoints.GetClosest(pForthOnLine);
                     listFoundForth.AddRange(listForthOnLine);
@@ -135,26 +139,29 @@ public class TripGenerator
             }
             else
             {
-                if (IsPointOnLine(pForthOnEarthWay1, line, listFoundForth, image))
+                if (IsPointOnLine(pForthOnEarthWay1, line, listFoundForth, image, pForth_CountBeforeTellingItIsALine))
                 {
                     pForthOnIsOnLine = true;
 
                     listFoundForth.AddRange(listForthOnEarthWay1);
                     listForthOnLine = new List<BorderWalkingPoint>();
                 }
-                else if (IsPointOnLine(pForthOnEarthWay2, line, listFoundForth, image))
+                else if (IsPointOnLine(pForthOnEarthWay2, line, listFoundForth, image, pForth_CountBeforeTellingItIsALine))
                 {
                     pForthOnIsOnLine = true;
 
                     listFoundForth.AddRange(listForthOnEarthWay2);
                     listForthOnLine = new List<BorderWalkingPoint>();
                 }
+                pForth_CountBeforeTellingItIsALine--;
             }
             if (pBackOnIsOnLine)
             {
-                if (!IsPointOnLine(pBackOnLine, line, listFoundBack, image))
+
+                if (!IsPointOnLine(pBackOnLine, line, listFoundBack, image, pBack_CountBeforeTellingItIsALine))
                 {
                     pBackOnIsOnLine = false;
+                    pBack_CountBeforeTellingItIsALine = CountBeforeTellingItIsALine;
                     pBackOnEarthWay1 = borderWalkingPoints.GetClosest(pBackOnLine);
                     pBackOnEarthWay2 = borderWalkingPoints.GetClosest(pBackOnLine);
                     listFoundBack.AddRange(listBackOnLine);
@@ -164,20 +171,21 @@ public class TripGenerator
             }
             else
             {
-                if (IsPointOnLine(pBackOnEarthWay1, line, listFoundBack, image))
+                if (IsPointOnLine(pBackOnEarthWay1, line, listFoundBack, image, pBack_CountBeforeTellingItIsALine))
                 {
                     pBackOnIsOnLine = true;
 
                     listFoundBack.AddRange(listBackOnEarthWay1);
                     listBackOnLine = new List<BorderWalkingPoint>();
                 }
-                else if (IsPointOnLine(pBackOnEarthWay2, line, listFoundBack, image))
+                else if (IsPointOnLine(pBackOnEarthWay2, line, listFoundBack, image, pBack_CountBeforeTellingItIsALine))
                 {
                     pBackOnIsOnLine = true;
 
                     listFoundBack.AddRange(listBackOnEarthWay2);
                     listBackOnLine = new List<BorderWalkingPoint>();
                 }
+                pBack_CountBeforeTellingItIsALine--;
             }
 
             //trouvé ? -> fin
@@ -243,7 +251,7 @@ public class TripGenerator
     }
 
     private bool IsPointOnLine(BorderWalkingPoint point, BorderPointCollection line,
-        IEnumerable<BorderWalkingPoint> foundPoints, Bitmap image)
+        IEnumerable<BorderWalkingPoint> foundPoints, Bitmap image, int countBeforeTellingItIsALine)
     {
         //if (foundPoints
         //    .Any(m => m.Equals(point)
@@ -254,7 +262,8 @@ public class TripGenerator
         var pointOnEarth = IsPointOnEarth(point, image);
         var pointOnLine = line.GetPoints().Any(p => MapUtils.GetDistance(point.Point, p.Point) <= NbPixelsPointsEqual);
         var pointOnBorder = IsBorderPoint(point, image);
-        return pointOnLine && (!pointOnEarth || pointOnBorder);
+        var isOkayCountBeforeTellingItIsALine = countBeforeTellingItIsALine <= 0;
+        return pointOnLine && (!pointOnEarth || pointOnBorder) && isOkayCountBeforeTellingItIsALine;
     }
 
 
