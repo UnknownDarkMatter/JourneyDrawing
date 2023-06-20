@@ -253,12 +253,12 @@ public class TripGenerator
     private bool IsPointOnLine(BorderWalkingPoint point, BorderPointCollection line,
         IEnumerable<BorderWalkingPoint> foundPoints, Bitmap image, int countBeforeTellingItIsALine)
     {
-        //if (foundPoints
-        //    .Any(m => m.Equals(point)
-        //        || MapUtils.GetDistance(m.Point, point.Point) <= NbPixelsPointsEqual))
-        //{
-        //    return false;
-        //}
+        if (foundPoints
+            .Any(m => m.Equals(point)
+                || MapUtils.GetDistance(m.Point, point.Point) <= NbPixelsPointsEqual))
+        {
+            return false;
+        }
         var pointOnEarth = IsPointOnEarth(point, image);
         var pointOnLine = line.GetPoints().Any(p => MapUtils.GetDistance(point.Point, p.Point) <= NbPixelsPointsEqual);
         var pointOnBorder = IsBorderPoint(point, image);
