@@ -1,18 +1,13 @@
 ﻿using ExtractPixels.MapProcessing.Model;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExtractPixels.MapProcessing;
 
 public class TripGenerator
 {
-    public const int NbPixelsPointsEqual = 4;
-    public const int NbPixelsNeighBours = 2;
-    public const int CountBeforeTellingItIsALine = 8;
+    public const int NbPixelsPointsEqual = 0;
+    public const int NbPixelsNeighBours = 1;
+    public const int CountBeforeTellingItIsALine = 4;
 
     /// <summary>
     /// [S sart, S end, SeaTrip]
