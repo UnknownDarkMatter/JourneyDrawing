@@ -11,6 +11,7 @@ namespace ExtractPixels.MapProcessing;
 public class TripGenerator
 {
     public const int NbPixelsPointsEqual = 4;
+    public const int NbPixelsNeighBours = 4;
 
     /// <summary>
     /// [S sart, S end, SeaTrip]
@@ -250,47 +251,79 @@ public class TripGenerator
         //{
         //    return false;
         //}
-        if(IsPointOnEarth(point, image)){
-            return false;
-        }
-        return line.GetPoints().Any(p => MapUtils.GetDistance(point.Point, p.Point) <= NbPixelsPointsEqual);
+        var pointOnEarth = IsPointOnEarth(point, image);
+        var pointOnLine = line.GetPoints().Any(p => MapUtils.GetDistance(point.Point, p.Point) <= NbPixelsPointsEqual);
+        var pointOnBorder = IsBorderPoint(point, image);
+        return pointOnLine && (!pointOnEarth || pointOnBorder);
     }
 
 
     private bool IsBorderPoint(BorderWalkingPoint pCurrent, Bitmap imageSource)
     {
-        var pointNeighbours = GetNeighbourPixels(pCurrent.Point, imageSource);
-        var currentIsCloseToSea = pointNeighbours
+        var neighBourPoints = new List<MapPoint>();
+        AddNeighbourPixels(pCurrent.Point, imageSource, neighBourPoints, 1, NbPixelsNeighBours);
+        var currentIsCloseToSea = neighBourPoints
             .Any(p => imageSource.GetPixel(p.X, p.Y).ToArgb() == BorderWalkingPointExtractor.SeaColor.ToArgb());
 
         return currentIsCloseToSea;
     }
 
 
-    private IEnumerable<MapPoint> GetNeighbourPixels(MapPoint p, Bitmap image)
+    private void AddNeighbourPixels(MapPoint p, Bitmap image, List<MapPoint> neighBourPoints, int depth, int maxDepth)
     {
-        var result = new List<MapPoint>();
-
+        if(depth> maxDepth) { return; }
         //cross pixels
-        result.Add(new MapPoint(p.X - 1, p.Y + 1));
-        result.Add(new MapPoint(p.X - 1, p.Y - 1));
-        result.Add(new MapPoint(p.X + 1, p.Y + 1));
-        result.Add(new MapPoint(p.X + 1, p.Y - 1));
+        var p1 = new MapPoint(p.X - 1, p.Y + 1);
+        if(!neighBourPoints.Any(p => p1.X == p.X && p1.Y == p.Y) && IsValidPoint(p1, image)) { 
+            neighBourPoints.Add(p1); 
+        }
+        var p2 = new MapPoint(p.X - 1, p.Y - 1);
+        if (!neighBourPoints.Any(p => p2.X == p.X && p2.Y == p.Y) && IsValidPoint(p2, image)) {
+            neighBourPoints.Add(p2); 
+        }
+        var p3 = new MapPoint(p.X + 1, p.Y + 1);
+        if (!neighBourPoints.Any(p => p3.X == p.X && p3.Y == p.Y) && IsValidPoint(p3, image)) {
+            neighBourPoints.Add(p3);
+        }
+        var p4 = new MapPoint(p.X + 1, p.Y - 1);
+        if (!neighBourPoints.Any(p => p4.X == p.X && p4.Y == p.Y) && IsValidPoint(p4, image)) { 
+            neighBourPoints.Add(p4); 
+        }
 
         //aside pixels
-        result.Add(new MapPoint(p.X, p.Y + 1));
-        result.Add(new MapPoint(p.X, p.Y - 1));
-        result.Add(new MapPoint(p.X + 1, p.Y));
-        result.Add(new MapPoint(p.X - 1, p.Y));
+        var p5 = new MapPoint(p.X, p.Y + 1);
+        if (!neighBourPoints.Any(p => p5.X == p.X && p5.Y == p.Y) && IsValidPoint(p5, image)) { 
+            neighBourPoints.Add(p5);
+        }
+        var p6 = new MapPoint(p.X, p.Y - 1);
+        if (!neighBourPoints.Any(p => p6.X == p.X && p6.Y == p.Y) && IsValidPoint(p6, image)) {
+            neighBourPoints.Add(p6);
+        }
+        var p7 = new MapPoint(p.X + 1, p.Y);
+        if (!neighBourPoints.Any(p => p7.X == p.X && p7.Y == p.Y) && IsValidPoint(p7, image)) { 
+            neighBourPoints.Add(p7); 
+        }
+        var p8 = new MapPoint(p.X - 1, p.Y);
+        if (!neighBourPoints.Any(p => p8.X == p.X && p8.Y == p.Y) && IsValidPoint(p8, image)) { 
+            neighBourPoints.Add(p8); 
+        }
 
-        result = result.Where((point) =>
-            point.X < image.Width
+        AddNeighbourPixels(p1, image, neighBourPoints, depth + 1, maxDepth);
+        AddNeighbourPixels(p2, image, neighBourPoints, depth + 1, maxDepth);
+        AddNeighbourPixels(p3, image, neighBourPoints, depth + 1, maxDepth);
+        AddNeighbourPixels(p4, image, neighBourPoints, depth + 1, maxDepth);
+        AddNeighbourPixels(p5, image, neighBourPoints, depth + 1, maxDepth);
+        AddNeighbourPixels(p6, image, neighBourPoints, depth + 1, maxDepth);
+        AddNeighbourPixels(p7, image, neighBourPoints, depth + 1, maxDepth);
+        AddNeighbourPixels(p8, image, neighBourPoints, depth + 1, maxDepth);
+    }
+
+    private bool IsValidPoint(MapPoint point, Bitmap image)
+    {
+        return point.X < image.Width
             && point.X >= 0
             && point.Y < image.Height
-            && point.Y >= 0
-        ).ToList();
-
-        return result;
+            && point.Y >= 0;
     }
 
 }
