@@ -27,6 +27,8 @@ public class TripGenerator
     public void CalculateAllTrips(BorderPointCollection borderWalkingPoints,
         decimal width, decimal height, string imageFilePath, Bitmap image, int? filterS1, int? filterS2)
     {
+        Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Preparing multithreading computing for generation of trips ...");
+
         MaxCount = borderWalkingPoints.BorderWalkingPoints.Keys.Count * borderWalkingPoints.BorderWalkingPoints.Keys.Count;
         ComputationCount = 0;
 
@@ -37,8 +39,6 @@ public class TripGenerator
         {
             var fromStartDestinations = new Dictionary<int, SeaTrip>();
             SeaTrips.Add(sStart, fromStartDestinations);
-
-            Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Preparing multithreading computing for generation of trips ...");
 
             foreach (var sEnd in borderWalkingPoints.BorderWalkingPoints.Keys.Where(m => filterS2 == null || m == filterS2))
             {
