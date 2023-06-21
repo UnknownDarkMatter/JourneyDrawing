@@ -33,29 +33,10 @@ string outputMapPath = Path.Combine(Environment.CurrentDirectory, "map.png");
 string workMapPath = Path.Combine(Environment.CurrentDirectory, "map_step1.png");
 string workMapPath2 = Path.Combine(Environment.CurrentDirectory, "map_step2.png");
 string workMapPath3 = Path.Combine(Environment.CurrentDirectory, "map_step3.png");
+string portsFilePath = Path.Combine(Environment.CurrentDirectory, "Ports.csv");
 
 var borderPointsCollection = new BorderPointCollection();
 var borderExtractor = new BorderWalkingPointExtractor(new List<IMapPointHandler>() { borderPointsCollection });
-
-//if (Constants.IsDebug)
-//{
-//    long maxCount = 9999 * 8888;
-//    long count = 0;
-//    for (int a = 1; a <= 9999; a++)
-//    {
-//        for (int b = 1; b <= 8888; b++)
-//        {
-//            count++;
-//            var rest = (int) (count % (maxCount * 0.1M));
-//            if (rest == 0 || rest  == (maxCount * 0.1M)) {
-//                Console.WriteLine($"DONE {(int)(10 * (((decimal)count / (decimal)maxCount)))}%");
-//            }
-//        }
-//    }
-
-//    var tripData = new SeaTripsData();
-//    tripData.SeaTrips.First().Value.First().Value.DrawTrip(new Bitmap(Image.FromFile(imageFilePath)), Path.Combine(Environment.CurrentDirectory, "map_step2_hardcoded.png"));
-//}
 
 int i = 1;//continent number
 int s = 1;//variable indicating progress when walking along the continents
@@ -76,6 +57,10 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
             imageOutput.SetPixel(x, y, Color.White);
         }
     }
+
+    Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Extracting ports coordinates ...");
+    var portsLoader = new PortsLoader(portsFilePath);
+    var ports = portsLoader.LoadPorts(new MapSize() {  Width=width, Height = height });
 
     Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Extracting borders ...");
 

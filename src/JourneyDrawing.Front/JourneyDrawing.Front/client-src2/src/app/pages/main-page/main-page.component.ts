@@ -47,8 +47,8 @@ export class MainPageComponent implements OnInit, AfterViewInit {
 
   public getPortLeftPixels(port:Port){
     var utmCoordinates = fromLatLon(port.latitudeWGS84!, port.longitudeWGS84!);
-    console.log(utmCoordinates);
     var pixelCoordinates = utmToPixels(utmCoordinates, this.screenSize);
+    console.log(`${port.name},leftPixels=${pixelCoordinates.leftPixels},topPixels=${pixelCoordinates.topPixels}`)
     return pixelCoordinates.leftPixels;
   }
   

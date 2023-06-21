@@ -278,34 +278,5 @@ public class CsvSerializer : ICsvSerializer
         return columns.Distinct();
     }
 
-    private List<CsvSerializationSetting> GetMatrixSerializationSettings<T>(T[] objectsList) where T : new()
-    {
-        var settings = new List<CsvSerializationSetting>();
-        settings.Add(new CsvSerializationSetting()
-        {
-            ColumnName = "Port",
-            PropertyName = "Port",
-            DataType = DataType.StringValue,
-            ValueGet = (element) => ((dynamic)element)[MatrixFirstColumnName]
-        });
-
-        var portNames = GetColumnNames(objectsList).ToList();
-        int i = 0;
-        foreach (var port in portNames)
-        {
-            settings.Add(new CsvSerializationSetting()
-            {
-                ColumnName = port,
-                PropertyName = port,
-                DataType = DataType.NumericValue,
-                ValueGet = (e) => { 
-                    return e[port];
-                }
-            });
-            i++;
-        }
-        return settings;
-    }
-
 
 }
