@@ -8,5 +8,5 @@ namespace ExtractPixels;
 
 public static class Constants
 {
-    public const bool IsDebug = true;
+    public const bool IsDebug = false;
 }

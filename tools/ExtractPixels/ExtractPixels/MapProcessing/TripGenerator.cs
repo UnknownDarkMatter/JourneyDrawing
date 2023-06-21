@@ -1,4 +1,6 @@
 ﻿using ExtractPixels.MapProcessing.Model;
+using ExtractPixels.MapProcessing.MultiThreading;
+using ExtractPixels.MapProcessing.MultiThreading.Business;
 using System.Drawing;
 
 namespace ExtractPixels.MapProcessing;
@@ -22,9 +24,13 @@ public class TripGenerator
     public void CalculateAllTrips(BorderPointCollection borderWalkingPoints,
         decimal width, decimal height, string imageFilePath, Bitmap image, int? filterS1, int? filterS2)
     {
-        long maxCount = borderWalkingPoints.BorderWalkingPoints.Keys.Count
-            * borderWalkingPoints.BorderWalkingPoints.Keys.Count;
-        long count = 0;
+        //long maxCount = borderWalkingPoints.BorderWalkingPoints.Keys.Count
+        //    * borderWalkingPoints.BorderWalkingPoints.Keys.Count;
+        //long count = 0;
+
+        var scheduler = new WorkScheduler<MyData, MyWorker>();
+        var myDatas = new List<MyData>();
+
         foreach (var sStart in borderWalkingPoints.BorderWalkingPoints.Keys.Where(m=> filterS1 == null || m == filterS1))
         {
             var fromStartDestinations = new Dictionary<int, SeaTrip>();
@@ -34,21 +40,34 @@ public class TripGenerator
             {
                 if (sStart == sEnd) { continue; }
 
-                var seaTrip = CalculateSingleTrip(sStart, sEnd, borderWalkingPoints, width, height, imageFilePath, image);
-                fromStartDestinations.Add(sEnd, seaTrip);
-                count++;
+                var mydata = new MyData(sStart, sEnd, borderWalkingPoints, width, height, imageFilePath, image);
+                myDatas.Add(mydata);
 
-                var rest = (int)(count % (maxCount * 0.1M));
-                if (rest == 0 || rest == (maxCount * 0.1M))
-                {
-                    Console.WriteLine($"DONE {(int)(10 * (((decimal)count / (decimal)maxCount)))}%");
-                }
+
+                //this code is moved into the scheduler for multithreading
+                //var seaTrip = CalculateSingleTrip(sStart, sEnd, borderWalkingPoints, width, height, imageFilePath, image);
+                //fromStartDestinations.Add(sEnd, seaTrip);
+
+
+                //count++;
+                //var rest = (int)(count % (maxCount * 0.1M));
+                //if (rest == 0 || rest == (maxCount * 0.1M))
+                //{
+                //    Console.WriteLine($"DONE {(int)(10 * (((decimal)count / (decimal)maxCount)))}%");
+                //}
 
             }
         }
+
+        scheduler.Run(myDatas);
+
+        foreach(var myData in myDatas)
+        {
+            SeaTrips[myData.sStart].Add(myData.sEnd, myData.SeaTrip);
+        }
     }
 
-    private SeaTrip CalculateSingleTrip(int sStart, int sEnd, BorderPointCollection borderWalkingPoints,
+    public SeaTrip CalculateSingleTrip(int sStart, int sEnd, BorderPointCollection borderWalkingPoints,
         decimal width, decimal height, string imageFilePath, Bitmap image)
     {
         var pStartOnEarth = borderWalkingPoints.BorderWalkingPoints[sStart];
