@@ -53,7 +53,7 @@ public class TripGenerator
                 //fromStartDestinations.Add(sEnd, seaTrip);
 
 
-                ComputationCount++;
+                //ComputationCount++;
                 var rest = (int)(ComputationCount % (MaxCount * 0.1M));
                 if (rest == 0 || rest == (MaxCount * 0.1M))
                 {

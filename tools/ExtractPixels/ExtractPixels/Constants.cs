@@ -9,4 +9,7 @@ namespace ExtractPixels;
 public static class Constants
 {
     public const bool IsDebug = false;
+
+
+    public const string CsvColumnSeparatorEscape="\"";
 }
