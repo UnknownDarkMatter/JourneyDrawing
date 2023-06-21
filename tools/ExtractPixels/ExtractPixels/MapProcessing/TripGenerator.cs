@@ -11,6 +11,9 @@ public class TripGenerator
     public const int NbPixelsNeighBours = 1;
     public const int CountBeforeTellingItIsALine = 4;
 
+    public static long MaxCount;
+    public static long ComputationCount;
+
     /// <summary>
     /// [S sart, S end, SeaTrip]
     /// </summary>
@@ -24,9 +27,8 @@ public class TripGenerator
     public void CalculateAllTrips(BorderPointCollection borderWalkingPoints,
         decimal width, decimal height, string imageFilePath, Bitmap image, int? filterS1, int? filterS2)
     {
-        //long maxCount = borderWalkingPoints.BorderWalkingPoints.Keys.Count
-        //    * borderWalkingPoints.BorderWalkingPoints.Keys.Count;
-        //long count = 0;
+        MaxCount = borderWalkingPoints.BorderWalkingPoints.Keys.Count * borderWalkingPoints.BorderWalkingPoints.Keys.Count;
+        ComputationCount = 0;
 
         var scheduler = new WorkScheduler<MyData, MyWorker>();
         var myDatas = new List<MyData>();
@@ -35,6 +37,8 @@ public class TripGenerator
         {
             var fromStartDestinations = new Dictionary<int, SeaTrip>();
             SeaTrips.Add(sStart, fromStartDestinations);
+
+            Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Preparing multithreading computing for generation of trips ...");
 
             foreach (var sEnd in borderWalkingPoints.BorderWalkingPoints.Keys.Where(m => filterS2 == null || m == filterS2))
             {
@@ -49,16 +53,18 @@ public class TripGenerator
                 //fromStartDestinations.Add(sEnd, seaTrip);
 
 
-                //count++;
-                //var rest = (int)(count % (maxCount * 0.1M));
-                //if (rest == 0 || rest == (maxCount * 0.1M))
-                //{
-                //    Console.WriteLine($"DONE {(int)(10 * (((decimal)count / (decimal)maxCount)))}%");
-                //}
+                ComputationCount++;
+                var rest = (int)(ComputationCount % (MaxCount * 0.1M));
+                if (rest == 0 || rest == (MaxCount * 0.1M))
+                {
+                    Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : DONE {(int)(10 * (((decimal)ComputationCount / (decimal)MaxCount)))}%");
+                }
 
             }
         }
 
+        Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Starting generation of trips...");
+        ComputationCount = 0;
         scheduler.Run(myDatas);
 
         foreach(var myData in myDatas)

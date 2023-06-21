@@ -75,6 +75,8 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
         }
     }
 
+    Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Extracting borders ...");
+
     var prod = !Constants.IsDebug; ;
     if (prod)
     {
@@ -130,9 +132,12 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
 
     File.Copy(workMapPath, workMapPath2, true);
 
-    Console.WriteLine("Veuillez ouvrir avec paint l'image suivante et remplir les continents avec une couleur");
-    Console.WriteLine($"Fichier : {workMapPath2}");
+    Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Please open the following image and fill with Paint the continents (lands)");
+    Console.WriteLine($"File : {workMapPath2}");
     Console.ReadLine();
+
+    Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Starting generation of file SeaTripsData.cs");
+
 
     var tripGenerator = new TripGenerator();
     var csharpGenerator = new CSharpGenerator();
@@ -151,8 +156,8 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
         tripGenerator.CalculateAllTrips(borderPointsCollection, width, height, workMapPath2, new Bitmap(Image.FromFile(workMapPath2)), null, null);
     }
 
-    csharpGenerator.GenerateSCharp(tripGenerator.SeaTrips, Path.Combine(Environment.CurrentDirectory, "SeaTripsData.cs"));
+    csharpGenerator.GenerateSCharp(tripGenerator.SeaTrips, borderPointsCollection, Path.Combine(Environment.CurrentDirectory, "SeaTripsData.cs"));
 
 }
 
-Console.WriteLine("ended");
+Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Ended");

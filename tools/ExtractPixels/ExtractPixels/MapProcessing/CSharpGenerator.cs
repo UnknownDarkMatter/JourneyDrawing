@@ -9,7 +9,7 @@ namespace ExtractPixels.MapProcessing;
 
 public class CSharpGenerator
 {
-    public void GenerateSCharp(Dictionary<int, Dictionary<int, SeaTrip>> seaTrips, string filePath)
+    public void GenerateSCharp(Dictionary<int, Dictionary<int, SeaTrip>> seaTrips, BorderPointCollection borderPointsCollection, string filePath)
     {
         var sb = new StringBuilder();
         sb.Append(@"
@@ -19,12 +19,24 @@ namespace ExtractPixels.MapProcessing;
 
 public class SeaTripsData
 {
+    /// <summary>
+    /// [S, SeaTrip]
+    /// </summary>
     public Dictionary<int, Dictionary<int, SeaTrip>> SeaTrips;
+
+    /// <summary>
+    /// [S, BorderWalkingPoint]
+    /// </summary>
+    public Dictionary<int, BorderWalkingPoint> BorderWalkingPoints;
+
 
     public SeaTripsData(){
         SeaTrips = new Dictionary<int, Dictionary<int, SeaTrip>>();
+        BorderWalkingPoints = new Dictionary<int, BorderWalkingPoint>();
+
         var list = new List<BorderWalkingPoint>();
 
+//////////////////// SeaTrips ////////////////////
 ");
         foreach(var seaTrip in seaTrips)
         {
@@ -44,6 +56,11 @@ public class SeaTripsData
 ");
             }
 
+        }
+        sb.AppendLine("//////////////////// BorderWalkingPoints ////////////////////");
+        foreach(var borderPoint in borderPointsCollection.BorderWalkingPoints.Values)
+        {
+            sb.AppendLine($"        BorderWalkingPoints.Add({borderPoint.S}, new BorderWalkingPoint({borderPoint.S},{borderPoint.X},{borderPoint.Y},{borderPoint.ContinentNumber}));");
         }
 
         sb.AppendLine("    }");
