@@ -20,8 +20,10 @@
         une valeur del'identifiant de s pour decroitre de 1
 
 */
+using ExtractPixels;
 using ExtractPixels.MapProcessing;
 using ExtractPixels.MapProcessing.Model;
+using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 
 string imageFilePath = Path.Combine(Environment.CurrentDirectory, "image.png");
@@ -33,6 +35,25 @@ string workMapPath3 = Path.Combine(Environment.CurrentDirectory, "map_step3.png"
 var borderPointsCollection = new BorderPointCollection();
 var borderExtractor = new BorderWalkingPointExtractor(new List<IMapPointHandler>() { borderPointsCollection });
 
+//if (Constants.IsDebug)
+//{
+//    long maxCount = 9999 * 8888;
+//    long count = 0;
+//    for (int a = 1; a <= 9999; a++)
+//    {
+//        for (int b = 1; b <= 8888; b++)
+//        {
+//            count++;
+//            var rest = (int) (count % (maxCount * 0.1M));
+//            if (rest == 0 || rest  == (maxCount * 0.1M)) {
+//                Console.WriteLine($"DONE {(int)(10 * (((decimal)count / (decimal)maxCount)))}%");
+//            }
+//        }
+//    }
+
+//    var tripData = new SeaTripsData();
+//    tripData.SeaTrips.First().Value.First().Value.DrawTrip(new Bitmap(Image.FromFile(imageFilePath)), Path.Combine(Environment.CurrentDirectory, "map_step2_hardcoded.png"));
+//}
 
 int i = 1;//continent number
 int s = 1;//variable indicating progress when walking along the continents
@@ -54,7 +75,7 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
         }
     }
 
-    var prod = false;
+    var prod = !Constants.IsDebug; ;
     if (prod)
     {
         borderExtractor.ExtractBorder(1847, 75, i++, ref s, imageSource, imageWork, workMapPath, imageOutput, outputMapPath);//continent eurasien
@@ -114,12 +135,24 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
     Console.ReadLine();
 
     var tripGenerator = new TripGenerator();
-    var s1 = borderPointsCollection.GetPoints().FirstOrDefault(m => m.X == 31 && m.Y == 208);
-    var s2 = borderPointsCollection.GetPoints().FirstOrDefault(m => m.X == 189 && m.Y == 304);
-    tripGenerator.CalculateAllTrips(borderPointsCollection, width, height, workMapPath2, 
-        new Bitmap(Image.FromFile(workMapPath2)), s1.S, s2.S);
-    var trip = tripGenerator.SeaTrips[s1.S][s2.S];
-    trip.DrawTrip(imageWork, workMapPath3);
+    var csharpGenerator = new CSharpGenerator();
+
+    if (Constants.IsDebug)
+    {
+        var s1 = borderPointsCollection.GetPoints().FirstOrDefault(m => m.X == 31 && m.Y == 208);
+        var s2 = borderPointsCollection.GetPoints().FirstOrDefault(m => m.X == 189 && m.Y == 304);
+        tripGenerator.CalculateAllTrips(borderPointsCollection, width, height, workMapPath2,
+            new Bitmap(Image.FromFile(workMapPath2)), s1.S, s2.S);
+        var trip = tripGenerator.SeaTrips[s1.S][s2.S];
+        trip.DrawTrip(imageWork, workMapPath3);
+    }
+    else
+    {
+        tripGenerator.CalculateAllTrips(borderPointsCollection, width, height, workMapPath2, new Bitmap(Image.FromFile(workMapPath2)), null, null);
+    }
+
+    csharpGenerator.GenerateSCharp(tripGenerator.SeaTrips, Path.Combine(Environment.CurrentDirectory, "SeaTripsData.cs"));
+
 }
 
 Console.WriteLine("ended");

@@ -20,23 +20,30 @@ public class TripGenerator
     }
 
     public void CalculateAllTrips(BorderPointCollection borderWalkingPoints,
-        decimal width, decimal height, string imageFilePath, Bitmap image, int filterS1, int filterS2)
+        decimal width, decimal height, string imageFilePath, Bitmap image, int? filterS1, int? filterS2)
     {
         long maxCount = borderWalkingPoints.BorderWalkingPoints.Keys.Count
             * borderWalkingPoints.BorderWalkingPoints.Keys.Count;
         long count = 0;
-        foreach (var sStart in borderWalkingPoints.BorderWalkingPoints.Keys.Where(m=>m == filterS1))
+        foreach (var sStart in borderWalkingPoints.BorderWalkingPoints.Keys.Where(m=> filterS1 == null || m == filterS1))
         {
             var fromStartDestinations = new Dictionary<int, SeaTrip>();
             SeaTrips.Add(sStart, fromStartDestinations);
 
-            foreach (var sEnd in borderWalkingPoints.BorderWalkingPoints.Keys.Where(m => m == filterS2))
+            foreach (var sEnd in borderWalkingPoints.BorderWalkingPoints.Keys.Where(m => filterS2 == null || m == filterS2))
             {
                 if (sStart == sEnd) { continue; }
 
                 var seaTrip = CalculateSingleTrip(sStart, sEnd, borderWalkingPoints, width, height, imageFilePath, image);
                 fromStartDestinations.Add(sEnd, seaTrip);
                 count++;
+
+                var rest = (int)(count % (maxCount * 0.1M));
+                if (rest == 0 || rest == (maxCount * 0.1M))
+                {
+                    Console.WriteLine($"DONE {(int)(10 * (((decimal)count / (decimal)maxCount)))}%");
+                }
+
             }
         }
     }
@@ -86,32 +93,44 @@ public class TripGenerator
             //on avance
             if (pForthOnIsOnLine)
             {
-                imageDebug.SetPixel(pForthOnLine.X, pForthOnLine.Y, Color.Pink);
-                imageDebug.Save(debugImagePath);
+                if (Constants.IsDebug)
+                {
+                    imageDebug.SetPixel(pForthOnLine.X, pForthOnLine.Y, Color.Pink);
+                    imageDebug.Save(debugImagePath);
+                }
 
                 pForthOnLine = line.BorderWalkingPoints[pForthOnLine.SPlus1];
             }
             else
             {
-                imageDebug.SetPixel(pForthOnEarthWay1.X, pForthOnEarthWay1.Y, Color.Red);
-                imageDebug.SetPixel(pForthOnEarthWay2.X, pForthOnEarthWay2.Y, Color.Green);
-                imageDebug.Save(debugImagePath);
+                if (Constants.IsDebug)
+                {
+                    imageDebug.SetPixel(pForthOnEarthWay1.X, pForthOnEarthWay1.Y, Color.Red);
+                    imageDebug.SetPixel(pForthOnEarthWay2.X, pForthOnEarthWay2.Y, Color.Green);
+                    imageDebug.Save(debugImagePath);
+                }
 
                 pForthOnEarthWay1 = borderWalkingPoints.BorderWalkingPoints[pForthOnEarthWay1.SPlus1];
                 pForthOnEarthWay2 = borderWalkingPoints.BorderWalkingPoints[pForthOnEarthWay2.SMinus1];
             }
             if (pBackOnIsOnLine)
             {
-                imageDebug.SetPixel(pForthOnLine.X, pForthOnLine.Y, Color.Violet);
-                imageDebug.Save(debugImagePath);
+                if (Constants.IsDebug)
+                {
+                    imageDebug.SetPixel(pForthOnLine.X, pForthOnLine.Y, Color.Violet);
+                    imageDebug.Save(debugImagePath);
+                }
 
                 pBackOnLine = line.BorderWalkingPoints[pBackOnLine.SMinus1];
             }
             else
             {
-                imageDebug.SetPixel(pForthOnEarthWay1.X, pForthOnEarthWay1.Y, Color.Red);
-                imageDebug.SetPixel(pForthOnEarthWay2.X, pForthOnEarthWay2.Y, Color.Green);
-                imageDebug.Save(debugImagePath);
+                if (Constants.IsDebug)
+                {
+                    imageDebug.SetPixel(pForthOnEarthWay1.X, pForthOnEarthWay1.Y, Color.Red);
+                    imageDebug.SetPixel(pForthOnEarthWay2.X, pForthOnEarthWay2.Y, Color.Green);
+                    imageDebug.Save(debugImagePath);
+                }
 
                 pBackOnEarthWay1 = borderWalkingPoints.BorderWalkingPoints[pBackOnEarthWay1.SPlus1];
                 pBackOnEarthWay2 = borderWalkingPoints.BorderWalkingPoints[pBackOnEarthWay2.SMinus1];
