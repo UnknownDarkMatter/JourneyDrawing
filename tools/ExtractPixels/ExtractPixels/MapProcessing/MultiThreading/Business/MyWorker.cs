@@ -31,7 +31,7 @@ public class MyWorker : Worker<MyData>
             var rest = (int)(TripGenerator.ComputationCount % (TripGenerator.MaxCount * 0.1M));
             if (rest == 0 || rest == (TripGenerator.MaxCount * 0.1M))
             {
-                Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : DONE {(int)(10 * (((decimal)TripGenerator.ComputationCount / (decimal)TripGenerator.MaxCount)))}%.");
+                Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : DONE {(int)(100 * (((decimal)TripGenerator.ComputationCount / (decimal)TripGenerator.MaxCount)))}%.");
             }
         }
         catch (Exception ex)

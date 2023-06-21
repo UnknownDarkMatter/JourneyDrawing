@@ -26,6 +26,8 @@ using ExtractPixels.MapProcessing.Model;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 
+Console.WriteLine("##### Image to C# Dictionaries program #####");
+
 string imageFilePath = Path.Combine(Environment.CurrentDirectory, "image.png");
 string outputMapPath = Path.Combine(Environment.CurrentDirectory, "map.png");
 string workMapPath = Path.Combine(Environment.CurrentDirectory, "map_step1.png");
