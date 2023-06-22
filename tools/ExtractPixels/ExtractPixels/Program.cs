@@ -23,6 +23,7 @@
 using ExtractPixels;
 using ExtractPixels.MapProcessing;
 using ExtractPixels.MapProcessing.Model;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 
@@ -57,10 +58,6 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
             imageOutput.SetPixel(x, y, Color.White);
         }
     }
-
-    Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Extracting ports coordinates ...");
-    var portsLoader = new PortsLoader(portsFilePath);
-    var ports = portsLoader.LoadPorts(new MapSize() {  Width=width, Height = height });
 
     Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Extracting borders ...");
 
@@ -116,9 +113,20 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
     }
     borderPointsCollection.LinkFirstAndLastOfContinent(null);
 
+    List<PortOnBorder> ports = null;
+    if (Constants.UsePortDeclaration)
+    {
+        Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Extracting ports coordinates ...");
+        var portsLoader = new PortsLoader(portsFilePath, borderPointsCollection);
+        ports = portsLoader.LoadPorts(new MapSize() { Width = width, Height = height });
+    }
+    else
+    {
+        Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Filtering to declarative list of ports disabled.");
+    }
+
 
     File.Copy(workMapPath, workMapPath2, true);
-
     Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Please open the following image and fill with Paint the continents (lands)");
     Console.WriteLine($"File : {workMapPath2}");
     Console.ReadLine();
@@ -129,22 +137,35 @@ using (var imageSource = new Bitmap(Image.FromFile(imageFilePath)))
     var tripGenerator = new TripGenerator();
     var csharpGenerator = new CSharpGenerator();
 
+    tripGenerator.CalculateAllTrips(borderPointsCollection, width, height, workMapPath2, new Bitmap(Image.FromFile(workMapPath2)), ports);
     if (Constants.IsDebug)
     {
-        var s1 = borderPointsCollection.GetPoints().FirstOrDefault(m => m.X == 31 && m.Y == 208);
-        var s2 = borderPointsCollection.GetPoints().FirstOrDefault(m => m.X == 189 && m.Y == 304);
-        tripGenerator.CalculateAllTrips(borderPointsCollection, width, height, workMapPath2,
-            new Bitmap(Image.FromFile(workMapPath2)), s1.S, s2.S);
-        var trip = tripGenerator.SeaTrips[s1.S][s2.S];
+        //var s1 = borderPointsCollection.GetPoints().FirstOrDefault(m => m.X == 31 && m.Y == 208);
+        //var s2 = borderPointsCollection.GetPoints().FirstOrDefault(m => m.X == 189 && m.Y == 304);
+        //tripGenerator.CalculateAllTrips(borderPointsCollection, width, height, workMapPath2,
+        //    new Bitmap(Image.FromFile(workMapPath2)), ports);
+        //var trip = tripGenerator.SeaTrips[s1.S][s2.S];
+        //trip.DrawTrip(imageWork, workMapPath3);
+
+        var trip = tripGenerator.SeaTrips.First().Value.First().Value;
         trip.DrawTrip(imageWork, workMapPath3);
+    }
+
+
+    if (Constants.UsePortDeclaration)
+    {
+        Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : the following files have been generated : ");
+        Console.WriteLine($"{Path.Combine(Environment.CurrentDirectory, "SeaTripsData.cs")})");
+        Console.WriteLine($"{Path.Combine(Environment.CurrentDirectory, "PortsOnBorders.cs")})");
+        csharpGenerator.GenerateSCharpSeaTripsData(tripGenerator.SeaTrips, borderPointsCollection, Path.Combine(Environment.CurrentDirectory, "SeaTripsData.cs"));
+        csharpGenerator.GenerareCSharpPortsOnBorders(ports, Path.Combine(Environment.CurrentDirectory, "PortsOnBorders.cs"));
     }
     else
     {
-        tripGenerator.CalculateAllTrips(borderPointsCollection, width, height, workMapPath2, new Bitmap(Image.FromFile(workMapPath2)), null, null);
+        Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : the following file has been generated : ");
+        Console.WriteLine($"{Path.Combine(Environment.CurrentDirectory, "SeaTripsData.cs")})");
+        csharpGenerator.GenerateSCharpSeaTripsData(tripGenerator.SeaTrips, borderPointsCollection, Path.Combine(Environment.CurrentDirectory, "SeaTripsData.cs"));
     }
-
-    csharpGenerator.GenerateSCharp(tripGenerator.SeaTrips, borderPointsCollection, Path.Combine(Environment.CurrentDirectory, "SeaTripsData.cs"));
-
 }
 
 Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Ended");

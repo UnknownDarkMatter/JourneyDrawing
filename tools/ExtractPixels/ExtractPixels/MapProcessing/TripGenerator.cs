@@ -1,6 +1,7 @@
 ﻿using ExtractPixels.MapProcessing.Model;
 using ExtractPixels.MapProcessing.MultiThreading;
 using ExtractPixels.MapProcessing.MultiThreading.Business;
+using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 
 namespace ExtractPixels.MapProcessing;
@@ -15,6 +16,11 @@ public class TripGenerator
     public static long ComputationCount;
 
     /// <summary>
+    /// buggué, acces concurrenciel
+    /// </summary>
+    private const bool UseMultiThreading = false;
+
+    /// <summary>
     /// [S sart, S end, SeaTrip]
     /// </summary>
     public Dictionary<int, Dictionary<int, SeaTrip>> SeaTrips;
@@ -25,35 +31,47 @@ public class TripGenerator
     }
 
     public void CalculateAllTrips(BorderPointCollection borderWalkingPoints,
-        decimal width, decimal height, string imageFilePath, Bitmap image, int? filterS1, int? filterS2)
+        decimal width, decimal height, string imageFilePath, Bitmap image, List<PortOnBorder> ports)
     {
-        Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Preparing multithreading computing for generation of trips ...");
+        if (UseMultiThreading)
+        {
+            Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Preparing multithreading computing for generation of trips ...");
+        }
+        else
+        {
+            Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Starting generation of trips...");
+        }
 
-        MaxCount = borderWalkingPoints.BorderWalkingPoints.Keys.Count * borderWalkingPoints.BorderWalkingPoints.Keys.Count;
-        ComputationCount = 0;
 
         var scheduler = new WorkScheduler<MyData, MyWorker>();
         var myDatas = new List<MyData>();
 
-        foreach (var sStart in borderWalkingPoints.BorderWalkingPoints.Keys.Where(m=> filterS1 == null || m == filterS1))
+        var filteredBorderWalkingPoints = borderWalkingPoints.BorderWalkingPoints.Where(m => ports == null || ports.Any(p => p.BorderWalkingPoint.S == m.Value.S)); ;
+        MaxCount = filteredBorderWalkingPoints.Count() * filteredBorderWalkingPoints.Count();
+        ComputationCount = 0;
+
+        foreach (var sStart in filteredBorderWalkingPoints)
         {
             var fromStartDestinations = new Dictionary<int, SeaTrip>();
-            SeaTrips.Add(sStart, fromStartDestinations);
+            SeaTrips.Add(sStart.Key, fromStartDestinations);
 
-            foreach (var sEnd in borderWalkingPoints.BorderWalkingPoints.Keys.Where(m => filterS2 == null || m == filterS2))
+            foreach (var sEnd in filteredBorderWalkingPoints)
             {
-                if (sStart == sEnd) { continue; }
+                if (sStart.Key == sEnd.Key) { continue; }
 
-                var mydata = new MyData(sStart, sEnd, borderWalkingPoints, width, height, imageFilePath, image);
-                myDatas.Add(mydata);
+                if (UseMultiThreading)
+                {
+                    var mydata = new MyData(sStart.Key, sEnd.Key, borderWalkingPoints, width, height, imageFilePath, image);
+                    myDatas.Add(mydata);
+                }
+                else
+                {
+                    //this code is moved into the scheduler for multithreading
+                    var seaTrip = CalculateSingleTrip(sStart.Key, sEnd.Key, borderWalkingPoints, width, height, imageFilePath, image);
+                    fromStartDestinations.Add(sEnd.Key, seaTrip);
+                    ComputationCount++;
+                }
 
-
-                //this code is moved into the scheduler for multithreading
-                //var seaTrip = CalculateSingleTrip(sStart, sEnd, borderWalkingPoints, width, height, imageFilePath, image);
-                //fromStartDestinations.Add(sEnd, seaTrip);
-
-
-                //ComputationCount++;
                 var rest = (int)(ComputationCount % (MaxCount * 0.1M));
                 if (rest == 0 || rest == (MaxCount * 0.1M))
                 {
@@ -63,13 +81,15 @@ public class TripGenerator
             }
         }
 
-        Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Starting generation of trips...");
-        ComputationCount = 0;
-        scheduler.Run(myDatas);
-
-        foreach(var myData in myDatas)
+        if (UseMultiThreading)
         {
-            SeaTrips[myData.sStart].Add(myData.sEnd, myData.SeaTrip);
+            Console.WriteLine($"{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")} : Starting generation of trips...");
+            ComputationCount = 0;
+            scheduler.Run(myDatas);
+            foreach (var myData in myDatas)
+            {
+                SeaTrips[myData.sStart].Add(myData.sEnd, myData.SeaTrip);
+            }
         }
     }
 

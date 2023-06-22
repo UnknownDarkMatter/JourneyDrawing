@@ -25,7 +25,10 @@ public class MyWorker : Worker<MyData>
             var seaTrip = _tripGenerator.CalculateSingleTrip(WorkerData.sStart, WorkerData.sEnd, 
                 WorkerData.borderWalkingPoints, WorkerData.width, WorkerData.height, WorkerData.imageFilePath, WorkerData.image);
 
-            WorkerData.SeaTrip = seaTrip;
+            lock (WorkerData.SeaTrip)
+            {
+                WorkerData.SeaTrip = seaTrip;
+            }
             TripGenerator.ComputationCount++;
 
             var rest = (int)(TripGenerator.ComputationCount % (TripGenerator.MaxCount * 0.1M));
