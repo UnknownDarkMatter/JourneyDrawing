@@ -9,11 +9,11 @@ namespace ExtractPixels.MapProcessing.Model;
 
 public class SeaTrip
 {
-    public BorderWalkingPoint StartPoint;
-    public BorderWalkingPoint EndPoint;
-    public IEnumerable<BorderWalkingPoint> TripPoints;
+    public WalkingPoint StartPoint;
+    public WalkingPoint EndPoint;
+    public IEnumerable<WalkingPoint> TripPoints;
 
-    public SeaTrip(BorderWalkingPoint startPoint, BorderWalkingPoint endPoint, IEnumerable<BorderWalkingPoint> tripPoints)
+    public SeaTrip(WalkingPoint startPoint, WalkingPoint endPoint, IEnumerable<WalkingPoint> tripPoints)
     {
         StartPoint = startPoint;
         EndPoint = endPoint;

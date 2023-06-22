@@ -12,22 +12,22 @@ namespace ExtractPixels.Deprecated;
 public class MapPreprocessingGenerator : IPixelHandler
 {
     /// <summary>
-    /// [S, BorderWalkingPoint]
+    /// [S, WalkingPoint]
     /// </summary>
-    private Dictionary<int, BorderWalkingPoint> _borderWalkingPoints;
+    private Dictionary<int, WalkingPoint> _borderWalkingPoints;
 
     /// <summary>
-    /// [X, [Y, BorderWalkingPoint]]
+    /// [X, [Y, WalkingPoint]]
     /// </summary>
-    private Dictionary<int, Dictionary<int, BorderWalkingPoint>> _borderWalkingPointsFromXAndY;
+    private Dictionary<int, Dictionary<int, WalkingPoint>> _borderWalkingPointsFromXAndY;
 
-    private BorderWalkingPoint _firstBorderWalkingPoint = null;
-    private BorderWalkingPoint _previousBorderWalkingPoint = null;
+    private WalkingPoint _firstBorderWalkingPoint = null;
+    private WalkingPoint _previousBorderWalkingPoint = null;
 
     public MapPreprocessingGenerator()
     {
-        _borderWalkingPoints = new Dictionary<int, BorderWalkingPoint>();
-        _borderWalkingPointsFromXAndY = new Dictionary<int, Dictionary<int, BorderWalkingPoint>>();
+        _borderWalkingPoints = new Dictionary<int, WalkingPoint>();
+        _borderWalkingPointsFromXAndY = new Dictionary<int, Dictionary<int, WalkingPoint>>();
     }
 
     /// <summary>
@@ -37,12 +37,12 @@ public class MapPreprocessingGenerator : IPixelHandler
     {
         if (_borderWalkingPointsFromXAndY.ContainsKey(x) && _borderWalkingPointsFromXAndY[x].ContainsKey(y)) { return; }
 
-        var borderWalkingPoint = new BorderWalkingPoint(s, x, y, continentNumber);
+        var borderWalkingPoint = new WalkingPoint(s, x, y, continentNumber);
         _borderWalkingPoints.Add(s, borderWalkingPoint);
-        Dictionary<int, BorderWalkingPoint> borderWalkingPointsFromY = _borderWalkingPointsFromXAndY.ContainsKey(x) ? _borderWalkingPointsFromXAndY[x] : null;
+        Dictionary<int, WalkingPoint> borderWalkingPointsFromY = _borderWalkingPointsFromXAndY.ContainsKey(x) ? _borderWalkingPointsFromXAndY[x] : null;
         if (borderWalkingPointsFromY == null)
         {
-            borderWalkingPointsFromY = new Dictionary<int, BorderWalkingPoint>();
+            borderWalkingPointsFromY = new Dictionary<int, WalkingPoint>();
             _borderWalkingPointsFromXAndY.Add(x, borderWalkingPointsFromY);
         }
         borderWalkingPointsFromY.Add(y, borderWalkingPoint);
@@ -62,7 +62,7 @@ public class MapPreprocessingGenerator : IPixelHandler
     /// Link the first borderWalkingPoint du continent avec le dernier en utilisant les variables SPlus1 et SMinus1
     /// </summary>
     /// <param name="borderWalkingPoint"></param>
-    public void LinkFirstAndLastOfContinent(BorderWalkingPoint borderWalkingPoint)
+    public void LinkFirstAndLastOfContinent(WalkingPoint borderWalkingPoint)
     {
 
         if (_previousBorderWalkingPoint != null && borderWalkingPoint != null

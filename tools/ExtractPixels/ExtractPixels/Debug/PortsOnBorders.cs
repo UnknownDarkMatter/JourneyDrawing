@@ -13,14 +13,14 @@ public class PortsOnBorders
         Ports = new List<PortOnBorder>();
 
         Ports.Add(new PortOnBorder() { 
-            BorderWalkingPoint = new BorderWalkingPoint(1082, 30, 289, 2), 
+            WalkingPoint = new WalkingPoint(1082, 30, 289, 2), 
             DistanceToBorder = 1.4142135623731M,
             OriginalLocation = new MapPoint(31, 288),
             Port = new Port() { Name = "Port1", LatitudeWGS84 = 0M, LongitudeWGS84 = 0M } 
         }
 );
         Ports.Add(new PortOnBorder() { 
-            BorderWalkingPoint = new BorderWalkingPoint(864, 189, 304, 2), 
+            WalkingPoint = new WalkingPoint(864, 189, 304, 2), 
             DistanceToBorder = 0M,
             OriginalLocation = new MapPoint(189, 304),
             Port = new Port() { Name = "Port2", LatitudeWGS84 = 0M, LongitudeWGS84 = 0M } 

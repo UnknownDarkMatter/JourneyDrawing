@@ -16,10 +16,10 @@ public static class MapUtils
     /// génère une ligne qui traverse toute la carte et où le dernier point est lié au premier et inversement
     /// </summary>
     /// <returns></returns>
-    public static BorderPointCollection GetLine(MapPoint p1, MapPoint p2, decimal width, decimal height, 
+    public static WalkingPointCollection GetLine(MapPoint p1, MapPoint p2, decimal width, decimal height, 
         int continentNumber, ref int s)
     {
-        var collection = new BorderPointCollection();
+        var collection = new WalkingPointCollection();
 
         if(p1.X == p2.X)
         {

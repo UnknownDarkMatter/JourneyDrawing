@@ -36,7 +36,7 @@ string workMapPath2 = Path.Combine(Environment.CurrentDirectory, "map_step2.png"
 string workMapPath3 = Path.Combine(Environment.CurrentDirectory, "map_step3.png");
 string portsFilePath = Path.Combine(Environment.CurrentDirectory, "Ports.csv");
 
-var borderPointsCollection = new BorderPointCollection();
+var borderPointsCollection = new WalkingPointCollection();
 var borderExtractor = new BorderWalkingPointExtractor(new List<IMapPointHandler>() { borderPointsCollection });
 
 int i = 1;//continent number

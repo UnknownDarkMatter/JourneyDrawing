@@ -15,7 +15,7 @@ public class MyData : WorkerData
 
     public int sEnd { get; set; }
 
-    public BorderPointCollection borderWalkingPoints { get; set; }
+    public WalkingPointCollection borderWalkingPoints { get; set; }
 
     public decimal width { get; set; }
 
@@ -27,7 +27,7 @@ public class MyData : WorkerData
 
     public SeaTrip SeaTrip { get; set; }
 
-    public MyData(int sStart, int sEnd, BorderPointCollection borderWalkingPoints,
+    public MyData(int sStart, int sEnd, WalkingPointCollection borderWalkingPoints,
         decimal width, decimal height, string imageFilePath, Bitmap image) {
         this.sStart = sStart;
         this.sEnd = sEnd;

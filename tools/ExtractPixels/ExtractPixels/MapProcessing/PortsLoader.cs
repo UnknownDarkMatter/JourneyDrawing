@@ -15,9 +15,9 @@ public class PortsLoader
     private ICsvSerializer _csvSerializer;
     private CsvConversionParameters _csvConversionParameters;
     private string _portsFilePath;
-    private BorderPointCollection _borderPointCollection;
+    private WalkingPointCollection _borderPointCollection;
 
-    public PortsLoader(string portsFilePath, BorderPointCollection borderPointCollection)
+    public PortsLoader(string portsFilePath, WalkingPointCollection borderPointCollection)
     {
         _portsFilePath = portsFilePath;
         _borderPointCollection = borderPointCollection;
@@ -52,7 +52,7 @@ public class PortsLoader
             var pixelCoordinates = UtmToPixelsConverter.UtmToPixels(utmCoordinates, size);
             var portOnBorder = new PortOnBorder()
             {
-                BorderWalkingPoint = null,
+                WalkingPoint = null,
                 DistanceToBorder = decimal.MaxValue,
                 OriginalLocation = pixelCoordinates,
                 Port = port
@@ -65,7 +65,7 @@ public class PortsLoader
             result = new List<PortOnBorder>();
             var portOnBorder = new PortOnBorder()
             {
-                BorderWalkingPoint = null,
+                WalkingPoint = null,
                 DistanceToBorder = decimal.MaxValue,
                 OriginalLocation = new MapPoint(31, 288),
                 Port = new Port() { Name="Port1" }
@@ -74,7 +74,7 @@ public class PortsLoader
 
             portOnBorder = new PortOnBorder()
             {
-                BorderWalkingPoint = null,
+                WalkingPoint = null,
                 DistanceToBorder = decimal.MaxValue,
                 OriginalLocation = new MapPoint(189, 304),
                 Port = new Port() { Name = "Port2" }
@@ -82,7 +82,7 @@ public class PortsLoader
             result.Add(portOnBorder);
         }
 
-        foreach (var borderPoint in _borderPointCollection.BorderWalkingPoints)
+        foreach (var borderPoint in _borderPointCollection.WalkingPoints)
         {
             foreach(var portOnBorder in result)
             {
@@ -90,7 +90,7 @@ public class PortsLoader
                 if(distance< portOnBorder.DistanceToBorder)
                 {
                     portOnBorder.DistanceToBorder = distance;
-                    portOnBorder.BorderWalkingPoint = borderPoint.Value;
+                    portOnBorder.WalkingPoint = borderPoint.Value;
                 }
             }
         }

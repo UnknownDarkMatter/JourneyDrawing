@@ -7,43 +7,43 @@ using System.Threading.Tasks;
 
 namespace ExtractPixels.MapProcessing;
 
-public class BorderPointCollection : IMapPointHandler
+public class WalkingPointCollection : IMapPointHandler
 {    
     /// <summary>
-     /// [S, BorderWalkingPoint]
+     /// [S, WalkingPoint]
      /// </summary>
-    private Dictionary<int, BorderWalkingPoint> _borderWalkingPoints;
+    private Dictionary<int, WalkingPoint> _borderWalkingPoints;
 
-    public Dictionary<int, BorderWalkingPoint> BorderWalkingPoints
+    public Dictionary<int, WalkingPoint> WalkingPoints
     {
         get { return _borderWalkingPoints; }
     }
 
 
     /// <summary>
-    /// [X, [Y, BorderWalkingPoint]]
+    /// [X, [Y, WalkingPoint]]
     /// </summary>
-    private Dictionary<int, Dictionary<int, BorderWalkingPoint>> _borderWalkingPointsFromXAndY;
+    private Dictionary<int, Dictionary<int, WalkingPoint>> _borderWalkingPointsFromXAndY;
 
-    private BorderWalkingPoint _firstBorderWalkingPoint = null;
-    private BorderWalkingPoint _previousBorderWalkingPoint = null;
+    private WalkingPoint _firstBorderWalkingPoint = null;
+    private WalkingPoint _previousBorderWalkingPoint = null;
 
-    public BorderPointCollection()
+    public WalkingPointCollection()
     {
-        _borderWalkingPoints = new Dictionary<int, BorderWalkingPoint>();
-        _borderWalkingPointsFromXAndY = new Dictionary<int, Dictionary<int, BorderWalkingPoint>>();
+        _borderWalkingPoints = new Dictionary<int, WalkingPoint>();
+        _borderWalkingPointsFromXAndY = new Dictionary<int, Dictionary<int, WalkingPoint>>();
     }
 
     public void AddMapPoint(MapPoint point, int continentNumber, ref int s)
     {
         if (_borderWalkingPointsFromXAndY.ContainsKey(point.X) && _borderWalkingPointsFromXAndY[point.X].ContainsKey(point.Y)) { return; }
 
-        var borderWalkingPoint = new BorderWalkingPoint(s, point.X, point.Y, continentNumber);
+        var borderWalkingPoint = new WalkingPoint(s, point.X, point.Y, continentNumber);
         _borderWalkingPoints.Add(s, borderWalkingPoint);
-        Dictionary<int, BorderWalkingPoint> borderWalkingPointsFromY = _borderWalkingPointsFromXAndY.ContainsKey(point.X) ? _borderWalkingPointsFromXAndY[point.X] : null;
+        Dictionary<int, WalkingPoint> borderWalkingPointsFromY = _borderWalkingPointsFromXAndY.ContainsKey(point.X) ? _borderWalkingPointsFromXAndY[point.X] : null;
         if (borderWalkingPointsFromY == null)
         {
-            borderWalkingPointsFromY = new Dictionary<int, BorderWalkingPoint>();
+            borderWalkingPointsFromY = new Dictionary<int, WalkingPoint>();
             _borderWalkingPointsFromXAndY.Add(point.X, borderWalkingPointsFromY);
         }
         borderWalkingPointsFromY.Add(point.Y, borderWalkingPoint);
@@ -64,7 +64,7 @@ public class BorderPointCollection : IMapPointHandler
     /// Link the first borderWalkingPoint du continent avec le dernier en utilisant les variables SPlus1 et SMinus1
     /// </summary>
     /// <param name="borderWalkingPoint"></param>
-    public void LinkFirstAndLastOfContinent(BorderWalkingPoint borderWalkingPoint)
+    public void LinkFirstAndLastOfContinent(WalkingPoint borderWalkingPoint)
     {
 
         if (_previousBorderWalkingPoint != null && borderWalkingPoint != null
@@ -99,12 +99,12 @@ public class BorderPointCollection : IMapPointHandler
         }
     }
 
-    public IEnumerable<BorderWalkingPoint> GetPoints()
+    public IEnumerable<WalkingPoint> GetPoints()
     {
         return _borderWalkingPoints.Values;
     }
 
-    public BorderWalkingPoint GetClosest(int x, int y)
+    public WalkingPoint GetClosest(int x, int y)
     {
         var targetPoint = new MapPoint(x, y);
         var closest = _borderWalkingPoints.Values.FirstOrDefault(p => p.X == x && p.Y == y);
@@ -124,7 +124,7 @@ public class BorderPointCollection : IMapPointHandler
         return closest;
     }
 
-    public BorderWalkingPoint GetClosest(BorderWalkingPoint point)
+    public WalkingPoint GetClosest(WalkingPoint point)
     {
         return GetClosest(point.X, point.Y);
     }

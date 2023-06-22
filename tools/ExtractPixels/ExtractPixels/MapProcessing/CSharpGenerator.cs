@@ -10,7 +10,7 @@ namespace ExtractPixels.MapProcessing;
 
 public class CSharpGenerator
 {
-    public void GenerateSCharpSeaTripsData(Dictionary<int, Dictionary<int, SeaTrip>> seaTrips, BorderPointCollection borderPointsCollection, string filePath)
+    public void GenerateSCharpSeaTripsData(Dictionary<int, Dictionary<int, SeaTrip>> seaTrips, WalkingPointCollection borderPointsCollection, string filePath)
     {
         var sb = new StringBuilder();
         sb.Append(@"
@@ -27,16 +27,16 @@ public class SeaTripsData
     public Dictionary<int, Dictionary<int, SeaTrip>> SeaTrips;
 
     /// <summary>
-    /// [S, BorderWalkingPoint]
+    /// [S, WalkingPoint]
     /// </summary>
-    public Dictionary<int, BorderWalkingPoint> BorderWalkingPoints;
+    public Dictionary<int, WalkingPoint> WalkingPoints;
 
 
     public SeaTripsData(){
         SeaTrips = new Dictionary<int, Dictionary<int, SeaTrip>>();
-        BorderWalkingPoints = new Dictionary<int, BorderWalkingPoint>();
+        WalkingPoints = new Dictionary<int, WalkingPoint>();
 
-        var list = new List<BorderWalkingPoint>();
+        var list = new List<WalkingPoint>();
 
 //////////////////// SeaTrips ////////////////////
 ");
@@ -45,24 +45,24 @@ public class SeaTripsData
             sb.AppendLine($"        SeaTrips.Add({seaTrip.Key}, new Dictionary<int, SeaTrip>());");
             foreach(var destination in seaTrip.Value)
             {
-                sb.AppendLine("        list = new List<BorderWalkingPoint>();");
+                sb.AppendLine("        list = new List<WalkingPoint>();");
                 foreach (var tripPoint in seaTrips[seaTrip.Key][destination.Key].TripPoints)
                 {
-                    sb.AppendLine($"        list.Add(new BorderWalkingPoint({tripPoint.S},{tripPoint.X},{tripPoint.Y},{tripPoint.ContinentNumber}));");
+                    sb.AppendLine($"        list.Add(new WalkingPoint({tripPoint.S},{tripPoint.X},{tripPoint.Y},{tripPoint.ContinentNumber}));");
                 }
                 
                 sb.AppendLine(@$"        SeaTrips[{seaTrip.Key}].Add({destination.Key}, new SeaTrip(
-            new BorderWalkingPoint({destination.Value.StartPoint.S},{destination.Value.StartPoint.X},{destination.Value.StartPoint.Y},{destination.Value.StartPoint.ContinentNumber}), 
-            new BorderWalkingPoint({destination.Value.EndPoint.S},{destination.Value.EndPoint.X},{destination.Value.EndPoint.Y},{destination.Value.EndPoint.ContinentNumber}), 
+            new WalkingPoint({destination.Value.StartPoint.S},{destination.Value.StartPoint.X},{destination.Value.StartPoint.Y},{destination.Value.StartPoint.ContinentNumber}), 
+            new WalkingPoint({destination.Value.EndPoint.S},{destination.Value.EndPoint.X},{destination.Value.EndPoint.Y},{destination.Value.EndPoint.ContinentNumber}), 
             list));
 ");
             }
 
         }
-        sb.AppendLine("//////////////////// BorderWalkingPoints ////////////////////");
-        foreach(var borderPoint in borderPointsCollection.BorderWalkingPoints.Values)
+        sb.AppendLine("//////////////////// WalkingPoints ////////////////////");
+        foreach(var borderPoint in borderPointsCollection.WalkingPoints.Values)
         {
-            sb.AppendLine($"        BorderWalkingPoints.Add({borderPoint.S}, new BorderWalkingPoint({borderPoint.S},{borderPoint.X},{borderPoint.Y},{borderPoint.ContinentNumber}));");
+            sb.AppendLine($"        WalkingPoints.Add({borderPoint.S}, new WalkingPoint({borderPoint.S},{borderPoint.X},{borderPoint.Y},{borderPoint.ContinentNumber}));");
         }
 
         sb.AppendLine("    }");
@@ -93,7 +93,7 @@ public class PortsOnBorders
         foreach (var port in ports)
         {
             sb.AppendLine(@$"        Ports.Add(new PortOnBorder() {{ 
-            BorderWalkingPoint = new BorderWalkingPoint({port.BorderWalkingPoint.S}, {port.BorderWalkingPoint.X}, {port.BorderWalkingPoint.Y}, {port.BorderWalkingPoint.ContinentNumber}), 
+            WalkingPoint = new WalkingPoint({port.WalkingPoint.S}, {port.WalkingPoint.X}, {port.WalkingPoint.Y}, {port.WalkingPoint.ContinentNumber}), 
             DistanceToBorder = {port.DistanceToBorder.ToString(culture)}M,
             OriginalLocation = new MapPoint({port.OriginalLocation.X}, {port.OriginalLocation.Y}),
             Port = new Port() {{ Name = ""{port.Port.Name}"", LatitudeWGS84 = {port.Port.LatitudeWGS84.ToString(culture)}M, LongitudeWGS84 = {port.Port.LongitudeWGS84.ToString(culture)}M }} 

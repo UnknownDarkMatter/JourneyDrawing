@@ -12,7 +12,7 @@ public class PortOnBorder
     /// <summary>
     /// OriginalLocation projected on the lands border
     /// </summary>
-    public BorderWalkingPoint BorderWalkingPoint { get; set; }
+    public WalkingPoint WalkingPoint { get; set; }
     /// <summary>
     /// location based on GPS coordinates, cn be in the sea or the lands
     /// </summary>

@@ -30,7 +30,7 @@ public class TripGenerator
         SeaTrips = new Dictionary<int, Dictionary<int, SeaTrip>>();
     }
 
-    public void CalculateAllTrips(BorderPointCollection borderWalkingPoints,
+    public void CalculateAllTrips(WalkingPointCollection borderWalkingPoints,
         decimal width, decimal height, string imageFilePath, Bitmap image, List<PortOnBorder> ports)
     {
         if (UseMultiThreading)
@@ -46,7 +46,7 @@ public class TripGenerator
         var scheduler = new WorkScheduler<MyData, MyWorker>();
         var myDatas = new List<MyData>();
 
-        var filteredBorderWalkingPoints = borderWalkingPoints.BorderWalkingPoints.Where(m => ports == null || ports.Any(p => p.BorderWalkingPoint.S == m.Value.S)); ;
+        var filteredBorderWalkingPoints = borderWalkingPoints.WalkingPoints.Where(m => ports == null || ports.Any(p => p.WalkingPoint.S == m.Value.S)); ;
         MaxCount = filteredBorderWalkingPoints.Count() * filteredBorderWalkingPoints.Count();
         ComputationCount = 0;
 
@@ -93,33 +93,33 @@ public class TripGenerator
         }
     }
 
-    public SeaTrip CalculateSingleTrip(int sStart, int sEnd, BorderPointCollection borderWalkingPoints,
+    public SeaTrip CalculateSingleTrip(int sStart, int sEnd, WalkingPointCollection borderWalkingPoints,
         decimal width, decimal height, string imageFilePath, Bitmap image)
     {
-        var pStartOnEarth = borderWalkingPoints.BorderWalkingPoints[sStart];
-        var pEndOnEarth = borderWalkingPoints.BorderWalkingPoints[sEnd];
+        var pStartOnEarth = borderWalkingPoints.WalkingPoints[sStart];
+        var pEndOnEarth = borderWalkingPoints.WalkingPoints[sEnd];
         int sLine = 1;
         var line = MapUtils.GetLine(pStartOnEarth.Point, pEndOnEarth.Point, width, height, 0, ref sLine);
         string debugImagePath = imageFilePath + "_debug.png";
         var imageDebug = MapUtils.Clone(image);
 
         //back and forth : d'un côté à l'autre
-        BorderWalkingPoint pForthOnLine = line.GetClosest(pStartOnEarth);
-        BorderWalkingPoint pForthOnEarthWay1 = pStartOnEarth;
-        BorderWalkingPoint pForthOnEarthWay2 = pStartOnEarth;
-        BorderWalkingPoint pBackOnLine = line.GetClosest(pStartOnEarth);
-        BorderWalkingPoint pBackOnEarthWay1 = pStartOnEarth;
-        BorderWalkingPoint pBackOnEarthWay2 = pStartOnEarth;
+        WalkingPoint pForthOnLine = line.GetClosest(pStartOnEarth);
+        WalkingPoint pForthOnEarthWay1 = pStartOnEarth;
+        WalkingPoint pForthOnEarthWay2 = pStartOnEarth;
+        WalkingPoint pBackOnLine = line.GetClosest(pStartOnEarth);
+        WalkingPoint pBackOnEarthWay1 = pStartOnEarth;
+        WalkingPoint pBackOnEarthWay2 = pStartOnEarth;
         bool pForthOnIsOnLine = true;
         bool pBackOnIsOnLine = true;
-        var listFoundForth = new List<BorderWalkingPoint>();
-        var listFoundBack = new List<BorderWalkingPoint>();
-        var listForthOnLine = new List<BorderWalkingPoint>();
-        var listForthOnEarthWay1 = new List<BorderWalkingPoint>();
-        var listForthOnEarthWay2 = new List<BorderWalkingPoint>();
-        var listBackOnLine = new List<BorderWalkingPoint>();
-        var listBackOnEarthWay1 = new List<BorderWalkingPoint>();
-        var listBackOnEarthWay2 = new List<BorderWalkingPoint>();
+        var listFoundForth = new List<WalkingPoint>();
+        var listFoundBack = new List<WalkingPoint>();
+        var listForthOnLine = new List<WalkingPoint>();
+        var listForthOnEarthWay1 = new List<WalkingPoint>();
+        var listForthOnEarthWay2 = new List<WalkingPoint>();
+        var listBackOnLine = new List<WalkingPoint>();
+        var listBackOnEarthWay1 = new List<WalkingPoint>();
+        var listBackOnEarthWay2 = new List<WalkingPoint>();
         var pForth_CountBeforeTellingItIsALine = 0;
         var pBack_CountBeforeTellingItIsALine = 0;
 
@@ -144,7 +144,7 @@ public class TripGenerator
                     imageDebug.Save(debugImagePath);
                 }
 
-                pForthOnLine = line.BorderWalkingPoints[pForthOnLine.SPlus1];
+                pForthOnLine = line.WalkingPoints[pForthOnLine.SPlus1];
             }
             else
             {
@@ -155,8 +155,8 @@ public class TripGenerator
                     imageDebug.Save(debugImagePath);
                 }
 
-                pForthOnEarthWay1 = borderWalkingPoints.BorderWalkingPoints[pForthOnEarthWay1.SPlus1];
-                pForthOnEarthWay2 = borderWalkingPoints.BorderWalkingPoints[pForthOnEarthWay2.SMinus1];
+                pForthOnEarthWay1 = borderWalkingPoints.WalkingPoints[pForthOnEarthWay1.SPlus1];
+                pForthOnEarthWay2 = borderWalkingPoints.WalkingPoints[pForthOnEarthWay2.SMinus1];
             }
             if (pBackOnIsOnLine)
             {
@@ -166,7 +166,7 @@ public class TripGenerator
                     imageDebug.Save(debugImagePath);
                 }
 
-                pBackOnLine = line.BorderWalkingPoints[pBackOnLine.SMinus1];
+                pBackOnLine = line.WalkingPoints[pBackOnLine.SMinus1];
             }
             else
             {
@@ -177,8 +177,8 @@ public class TripGenerator
                     imageDebug.Save(debugImagePath);
                 }
 
-                pBackOnEarthWay1 = borderWalkingPoints.BorderWalkingPoints[pBackOnEarthWay1.SPlus1];
-                pBackOnEarthWay2 = borderWalkingPoints.BorderWalkingPoints[pBackOnEarthWay2.SMinus1];
+                pBackOnEarthWay1 = borderWalkingPoints.WalkingPoints[pBackOnEarthWay1.SPlus1];
+                pBackOnEarthWay2 = borderWalkingPoints.WalkingPoints[pBackOnEarthWay2.SMinus1];
             }
 
             //apres un pas en avant on repere où on est
@@ -191,8 +191,8 @@ public class TripGenerator
                     pForthOnEarthWay1 = borderWalkingPoints.GetClosest(pForthOnLine);
                     pForthOnEarthWay2 = borderWalkingPoints.GetClosest(pForthOnLine);
                     listFoundForth.AddRange(listForthOnLine);
-                    listForthOnEarthWay1 = new List<BorderWalkingPoint>();
-                    listForthOnEarthWay2 = new List<BorderWalkingPoint>();
+                    listForthOnEarthWay1 = new List<WalkingPoint>();
+                    listForthOnEarthWay2 = new List<WalkingPoint>();
 
                 }
             }
@@ -203,14 +203,14 @@ public class TripGenerator
                     pForthOnIsOnLine = true;
                     pForthOnLine = line.GetClosest(pForthOnEarthWay1);
                     listFoundForth.AddRange(listForthOnEarthWay1);
-                    listForthOnLine = new List<BorderWalkingPoint>();
+                    listForthOnLine = new List<WalkingPoint>();
                 }
                 else if (IsPointOnLine(pForthOnEarthWay2, line, listFoundForth, image, pForth_CountBeforeTellingItIsALine))
                 {
                     pForthOnIsOnLine = true;
                     pForthOnLine = line.GetClosest(pForthOnEarthWay2);
                     listFoundForth.AddRange(listForthOnEarthWay2);
-                    listForthOnLine = new List<BorderWalkingPoint>();
+                    listForthOnLine = new List<WalkingPoint>();
                 }
                 pForth_CountBeforeTellingItIsALine--;
             }
@@ -224,8 +224,8 @@ public class TripGenerator
                     pBackOnEarthWay1 = borderWalkingPoints.GetClosest(pBackOnLine);
                     pBackOnEarthWay2 = borderWalkingPoints.GetClosest(pBackOnLine);
                     listFoundBack.AddRange(listBackOnLine);
-                    listBackOnEarthWay1 = new List<BorderWalkingPoint>();
-                    listBackOnEarthWay2 = new List<BorderWalkingPoint>();
+                    listBackOnEarthWay1 = new List<WalkingPoint>();
+                    listBackOnEarthWay2 = new List<WalkingPoint>();
                 }
             }
             else
@@ -235,14 +235,14 @@ public class TripGenerator
                     pBackOnIsOnLine = true;
                     pBackOnLine = line.GetClosest(pBackOnEarthWay1);
                     listFoundBack.AddRange(listBackOnEarthWay1);
-                    listBackOnLine = new List<BorderWalkingPoint>();
+                    listBackOnLine = new List<WalkingPoint>();
                 }
                 else if (IsPointOnLine(pBackOnEarthWay2, line, listFoundBack, image, pBack_CountBeforeTellingItIsALine))
                 {
                     pBackOnIsOnLine = true;
                     pBackOnLine = line.GetClosest(pBackOnEarthWay2);
                     listFoundBack.AddRange(listBackOnEarthWay2);
-                    listBackOnLine = new List<BorderWalkingPoint>();
+                    listBackOnLine = new List<WalkingPoint>();
                 }
                 pBack_CountBeforeTellingItIsALine--;
             }
@@ -297,20 +297,20 @@ public class TripGenerator
         return seaTrip;
     }
 
-    private bool IsPointOnEarth(BorderWalkingPoint point, Bitmap image)
+    private bool IsPointOnEarth(WalkingPoint point, Bitmap image)
     {
         var isPointInSea = IsPointInSea(point, image);
         //var isBorderPoint = IsBorderPoint(point, image);
         return !isPointInSea;
     }
 
-    private bool IsPointInSea(BorderWalkingPoint point, Bitmap image)
+    private bool IsPointInSea(WalkingPoint point, Bitmap image)
     {
         return image.GetPixel(point.X, point.Y).ToArgb() == BorderWalkingPointExtractor.SeaColor.ToArgb();
     }
 
-    private bool IsPointOnLine(BorderWalkingPoint point, BorderPointCollection line,
-        IEnumerable<BorderWalkingPoint> foundPoints, Bitmap image, int countBeforeTellingItIsALine)
+    private bool IsPointOnLine(WalkingPoint point, WalkingPointCollection line,
+        IEnumerable<WalkingPoint> foundPoints, Bitmap image, int countBeforeTellingItIsALine)
     {
         if (foundPoints
             .Any(m => m.Equals(point)
@@ -326,7 +326,7 @@ public class TripGenerator
     }
 
 
-    private bool IsBorderPoint(BorderWalkingPoint pCurrent, Bitmap imageSource)
+    private bool IsBorderPoint(WalkingPoint pCurrent, Bitmap imageSource)
     {
         var neighBourPoints = new List<MapPoint>();
         AddNeighbourPixels(pCurrent.Point, imageSource, neighBourPoints, 1, NbPixelsNeighBours);
