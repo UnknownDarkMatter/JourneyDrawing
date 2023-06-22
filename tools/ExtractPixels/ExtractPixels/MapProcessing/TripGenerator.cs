@@ -138,7 +138,7 @@ public class TripGenerator
             //on avance
             if (pForthOnIsOnLine)
             {
-                if (Constants.IsDebug)
+                if (Constants.IsDebugImage)
                 {
                     imageDebug.SetPixel(pForthOnLine.X, pForthOnLine.Y, Color.Pink);
                     imageDebug.Save(debugImagePath);
@@ -148,7 +148,7 @@ public class TripGenerator
             }
             else
             {
-                if (Constants.IsDebug)
+                if (Constants.IsDebugImage)
                 {
                     imageDebug.SetPixel(pForthOnEarthWay1.X, pForthOnEarthWay1.Y, Color.Red);
                     imageDebug.SetPixel(pForthOnEarthWay2.X, pForthOnEarthWay2.Y, Color.Green);
@@ -160,7 +160,7 @@ public class TripGenerator
             }
             if (pBackOnIsOnLine)
             {
-                if (Constants.IsDebug)
+                if (Constants.IsDebugImage)
                 {
                     imageDebug.SetPixel(pForthOnLine.X, pForthOnLine.Y, Color.Violet);
                     imageDebug.Save(debugImagePath);
@@ -170,7 +170,7 @@ public class TripGenerator
             }
             else
             {
-                if (Constants.IsDebug)
+                if (Constants.IsDebugImage)
                 {
                     imageDebug.SetPixel(pForthOnEarthWay1.X, pForthOnEarthWay1.Y, Color.Red);
                     imageDebug.SetPixel(pForthOnEarthWay2.X, pForthOnEarthWay2.Y, Color.Green);

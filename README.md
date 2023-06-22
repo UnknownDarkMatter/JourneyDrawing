@@ -1,5 +1,11 @@
 # JourneyDrawing
 
+https://en.wikipedia.org/wiki/A*_search_algorithm#:~:text=A*%20is%20an%20informed%20search,shortest%20time%2C%20etc.).
+
+http://theory.stanford.edu/~amitp/GameProgramming/AStarComparison.html
+
+------------------------------
+
 the map comes from here : https://fr.wikipedia.org/wiki/Transverse_universelle_de_Mercator
 https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system
 https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system#/media/File:Universal_Transverse_Mercator_zones.svg
